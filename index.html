@@ -742,13 +742,20 @@
   <div class="record-toolbar">
     <div class="record-buttons" id="letterButtons">
       <button class="btn-letter" data-letter="C">C</button>
+      <button class="btn-letter" data-letter="D">D</button>
+      <button class="btn-letter" data-letter="G">G</button>
+      <button class="btn-letter" data-letter="I">I</button>
+      <button class="btn-letter" data-letter="J">J</button>
       <button class="btn-letter" data-letter="L">L</button>
+      <button class="btn-letter" data-letter="M">M</button>
+      <button class="btn-letter" data-letter="N">N</button>
       <button class="btn-letter" data-letter="O">O</button>
-      <button class="btn-letter" data-letter="Z">Z</button>
+      <button class="btn-letter" data-letter="P">P</button>
       <button class="btn-letter" data-letter="S">S</button>
       <button class="btn-letter" data-letter="U">U</button>
-      <button class="btn-letter" data-letter="N">N</button>
-      <button class="btn-letter" data-letter="P">P</button>
+      <button class="btn-letter" data-letter="V">V</button>
+      <button class="btn-letter" data-letter="W">W</button>
+      <button class="btn-letter" data-letter="Z">Z</button>
       <button class="btn-cancel" id="btnCancel" title="Discard current recording">✕ Cancel</button>
     </div>
     <div class="record-banner" id="recordBanner">
@@ -1069,10 +1076,12 @@
     }
 
     function renderPredictions(res) {
+      console.log("Inference response received:", res);
       if (res.inference_error) {
         predLetter.textContent = "?";
         predConf.textContent = "";
         predSub.textContent = res.inference_error;
+        if (probBars) probBars.innerHTML = "";
         inferenceStatusBadge.textContent = "Classification Failed";
         inferenceStatusBadge.style.color = "#ef4444";
         return;

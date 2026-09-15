@@ -295,6 +295,7 @@ class GestureRecorder:
 
 
 import joblib
+import numpy as np
 from features import extract_features
 
 MODEL_PATH = Path(__file__).parent / "models" / "gesture_rf.joblib"
@@ -341,47 +342,53 @@ class GestureClassifier:
 
     def classify(self) -> dict | None:
         """Classifies accumulated gesture points and returns top predictions."""
-        if not self.model:
-            self.load_model()
+        try:
             if not self.model:
+                self.load_model()
+                if not self.model:
+                    return {
+                        "inference_error": "No trained model found. Please train the model first."
+                    }
+
+            if len(self.points) < 4:
                 return {
-                    "inference_error": "No trained model found. Please train the model first."
+                    "inference_error": f"Gesture too short ({len(self.points)} points collected, minimum 4 required)."
                 }
 
-        if len(self.points) < 4:
-            return {"inference_error": "Gesture too short (less than 4 valid points)."}
+            feats = extract_features(self.points)
+            if feats is None:
+                return {"inference_error": "Unable to extract features from points."}
 
-        feats = extract_features(self.points)
-        if feats is None:
-            return {"inference_error": "Unable to extract features from points."}
+            # Predict probabilities
+            X = np.array([feats], dtype=np.float32)
+            probs = self.model.predict_proba(X)[0]
+            top_indices = np.argsort(probs)[::-1]
 
-        # Predict probabilities
-        X = np.array([feats], dtype=np.float32)
-        probs = self.model.predict_proba(X)[0]
-        top_indices = np.argsort(probs)[::-1]
+            predictions = []
+            for idx in top_indices:
+                predictions.append(
+                    {
+                        "letter": self.classes[idx],
+                        "confidence": round(float(probs[idx]), 3),
+                    }
+                )
 
-        predictions = []
-        for idx in top_indices:
-            predictions.append(
-                {
-                    "letter": self.classes[idx],
-                    "confidence": round(float(probs[idx]), 3),
-                }
+            best = predictions[0]
+            logger.info(
+                "Gesture classified as '%s' (%0.1f%% confidence, %d points)",
+                best["letter"],
+                best["confidence"] * 100,
+                len(self.points),
             )
-
-        best = predictions[0]
-        logger.info(
-            "Gesture classified as '%s' (%0.1f%% confidence, %d points)",
-            best["letter"],
-            best["confidence"] * 100,
-            len(self.points),
-        )
-        return {
-            "predicted_letter": best["letter"],
-            "confidence": best["confidence"],
-            "predictions": predictions[:4],
-            "points_count": len(self.points),
-        }
+            return {
+                "predicted_letter": best["letter"],
+                "confidence": best["confidence"],
+                "predictions": predictions[:4],
+                "points_count": len(self.points),
+            }
+        except Exception as e:
+            logger.error("Error during gesture classification: %s", e, exc_info=True)
+            return {"inference_error": f"Classification error: {str(e)}"}
 
 
 recorder = GestureRecorder()
@@ -544,7 +551,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 action = msg.get("action")
                 if action == "start_recording":
                     letter = str(msg.get("letter", "")).upper()
-                    if letter in "CLOZSUV" and len(letter) == 1:
+                    if letter.isalpha() and len(letter) == 1:
                         # If already recording or waiting on this exact letter, stop it
                         if (
                             recorder.state != "idle"

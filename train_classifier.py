@@ -52,9 +52,15 @@ def load_dataset():
     with open(CSV_PATH, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            rid = row["recording_id"]
-            rec_letters[rid] = row["letter"].strip().upper()
-            rec_points[rid].append((float(row["x_cm"]), float(row["y_cm"])))
+            try:
+                rid = row["recording_id"]
+                letter = row["letter"].strip().upper()
+                x = float(row["x_cm"])
+                y = float(row["y_cm"])
+                rec_letters[rid] = letter
+                rec_points[rid].append((x, y))
+            except ValueError, KeyError, TypeError:
+                continue
 
     X_list = []
     y_list = []
