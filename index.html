@@ -588,6 +588,146 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.2; }
     }
+
+    /* Inference / Test Mode Toolbar */
+    .ml-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .btn-ml {
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease-in-out;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      user-select: none;
+    }
+
+    .btn-ml:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+      background: #eff6ff;
+      transform: translateY(-1px);
+    }
+
+    .btn-ml-primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+
+    .btn-ml-primary:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-ml.active {
+      background: #10b981;
+      border-color: #10b981;
+      color: #ffffff;
+      animation: pulseRecord 1.2s infinite;
+    }
+
+    /* Inference Results Card */
+    .inference-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .inference-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .inference-top-pred {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .inference-letter {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: #2563eb;
+      line-height: 1;
+    }
+
+    .inference-conf {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #10b981;
+    }
+
+    .prob-bar-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .prob-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .prob-label {
+      width: 16px;
+      color: var(--text);
+    }
+
+    .prob-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .prob-bar-fill {
+      height: 100%;
+      background: #2563eb;
+      border-radius: 999px;
+      transition: width 0.3s ease-out;
+      width: 0%;
+    }
+
+    .prob-val {
+      width: 38px;
+      text-align: right;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
   </style>
 </head>
 <body>
@@ -614,6 +754,16 @@
     <div class="record-banner" id="recordBanner">
       <div class="record-dot-anim" id="recordDot"></div>
       <span id="recordBannerText">Ready</span>
+    </div>
+
+    <!-- Inference & Training Controls -->
+    <div class="ml-toolbar">
+      <button class="btn-ml btn-ml-primary" id="btnTestGesture" title="Start/Stop gesture classification">
+        <span>⚡ Test Gesture (Inference)</span>
+      </button>
+      <button class="btn-ml" id="btnTrainModel" title="Retrain Random Forest model on recorded data">
+        <span>🔄 Retrain Model</span>
+      </button>
     </div>
   </div>
 
@@ -661,6 +811,22 @@
 
     <!-- Live Metrics Grid -->
     <div class="stats-col">
+      <!-- Real-time Classifier Results -->
+      <div class="inference-card" id="inferenceCard">
+        <div class="inference-title">
+          <span>Random Forest Classification</span>
+          <span id="inferenceStatusBadge" style="color: var(--muted); font-size: 0.72rem;">Model Ready</span>
+        </div>
+        <div class="inference-top-pred">
+          <div class="inference-letter" id="predLetter">--</div>
+          <div>
+            <div class="inference-conf" id="predConf">--%</div>
+            <div style="font-size: 0.75rem; color: var(--muted);" id="predSub">Draw gesture & test</div>
+          </div>
+        </div>
+        <div class="prob-bar-container" id="probBars"></div>
+      </div>
+
       <div class="coords-card">
         <div class="coords-title">Calculated Hand Position (X, Y)</div>
         <div class="coords-display">
@@ -851,8 +1017,90 @@
     const letterButtons = document.querySelectorAll(".btn-letter");
     const btnCancel = document.getElementById("btnCancel");
 
+    // ML Elements
+    const btnTestGesture = document.getElementById("btnTestGesture");
+    const btnTrainModel = document.getElementById("btnTrainModel");
+    const predLetter = document.getElementById("predLetter");
+    const predConf = document.getElementById("predConf");
+    const predSub = document.getElementById("predSub");
+    const probBars = document.getElementById("probBars");
+    const inferenceStatusBadge = document.getElementById("inferenceStatusBadge");
+
     let activeLetter = null;
+    let isTestModeActive = false;
     let ws = null;
+
+    if (btnTestGesture) {
+      btnTestGesture.addEventListener("click", () => {
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+        if (!isTestModeActive) {
+          // Start test gesture mode
+          isTestModeActive = true;
+          btnTestGesture.classList.add("active");
+          btnTestGesture.innerHTML = "<span>⏹ Classify Gesture</span>";
+          clearTrail();
+          syncTrailCanvasSize();
+          predLetter.textContent = "--";
+          predConf.textContent = "--%";
+          predSub.textContent = "Recording gesture... Draw now!";
+          inferenceStatusBadge.textContent = "Listening";
+          inferenceStatusBadge.style.color = "#10b981";
+          ws.send(JSON.stringify({ action: "start_inference" }));
+        } else {
+          // Classify collected gesture points
+          isTestModeActive = false;
+          btnTestGesture.classList.remove("active");
+          btnTestGesture.innerHTML = "<span>⚡ Test Gesture (Inference)</span>";
+          predSub.textContent = "Classifying...";
+          ws.send(JSON.stringify({ action: "classify_gesture" }));
+        }
+      });
+    }
+
+    if (btnTrainModel) {
+      btnTrainModel.addEventListener("click", () => {
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+        btnTrainModel.disabled = true;
+        btnTrainModel.innerHTML = "<span>⏳ Training...</span>";
+        inferenceStatusBadge.textContent = "Training Model...";
+        inferenceStatusBadge.style.color = "#f59e0b";
+        ws.send(JSON.stringify({ action: "train_model" }));
+      });
+    }
+
+    function renderPredictions(res) {
+      if (res.inference_error) {
+        predLetter.textContent = "?";
+        predConf.textContent = "";
+        predSub.textContent = res.inference_error;
+        inferenceStatusBadge.textContent = "Classification Failed";
+        inferenceStatusBadge.style.color = "#ef4444";
+        return;
+      }
+
+      predLetter.textContent = res.predicted_letter;
+      predConf.textContent = `${(res.confidence * 100).toFixed(0)}%`;
+      predSub.textContent = `Classified from ${res.points_count} points`;
+      inferenceStatusBadge.textContent = "Classification Complete";
+      inferenceStatusBadge.style.color = "#2563eb";
+
+      if (probBars && res.predictions) {
+        probBars.innerHTML = "";
+        res.predictions.forEach(p => {
+          const pct = (p.confidence * 100).toFixed(0);
+          const row = document.createElement("div");
+          row.className = "prob-row";
+          row.innerHTML = `
+            <span class="prob-label">${p.letter}</span>
+            <div class="prob-bar-bg">
+              <div class="prob-bar-fill" style="width: ${pct}%;"></div>
+            </div>
+            <span class="prob-val">${pct}%</span>
+          `;
+          probBars.appendChild(row);
+        });
+      }
+    }
 
     letterButtons.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -958,6 +1206,37 @@
           // Handle recording notifications
           if (data.recording_status) {
             setRecordingUIState(data.recording_status, data.letter, data);
+            return;
+          }
+
+          // Handle ML inference and training events
+          if (data.inference_result) {
+            renderPredictions(data.inference_result);
+            return;
+          }
+
+          if (data.inference_status) {
+            if (data.inference_status === "active") {
+              inferenceStatusBadge.textContent = "Listening...";
+              inferenceStatusBadge.style.color = "#10b981";
+            } else if (data.inference_status === "idle") {
+              inferenceStatusBadge.textContent = "Model Ready";
+              inferenceStatusBadge.style.color = "var(--muted)";
+            }
+            return;
+          }
+
+          if (data.train_status) {
+            btnTrainModel.disabled = false;
+            btnTrainModel.innerHTML = "<span>🔄 Retrain Model</span>";
+            if (data.train_status === "completed") {
+              inferenceStatusBadge.textContent = `Model Trained (${data.classes ? data.classes.join(',') : ''})`;
+              inferenceStatusBadge.style.color = "#10b981";
+              predSub.textContent = "Model retrained and ready!";
+            } else {
+              inferenceStatusBadge.textContent = "Training Failed";
+              inferenceStatusBadge.style.color = "#ef4444";
+            }
             return;
           }
 
@@ -1081,8 +1360,8 @@
             if (targetY !== null) axesDetected.push("Y (Vertical)");
             posInfo.textContent = `Active Tracking: ${axesDetected.join(" + ")}`;
 
-            // If a recording session is currently recording, save full (X, Y) pair to trail
-            if (data.recording_state === "recording" && measuredX !== null && measuredY !== null) {
+            // If recording or testing a gesture, save full (X, Y) pair to trail
+            if ((data.recording_state === "recording" || data.inference_active) && measuredX !== null && measuredY !== null) {
               recordedPoints.push({ x: measuredX, y: measuredY });
               drawTrail();
             }

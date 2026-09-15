@@ -294,7 +294,98 @@ class GestureRecorder:
         return CSV_FILE_PATH.name
 
 
+import joblib
+from features import extract_features
+
+MODEL_PATH = Path(__file__).parent / "models" / "gesture_rf.joblib"
+
+
+class GestureClassifier:
+    def __init__(self):
+        self.model = None
+        self.classes = []
+        self.points: list[tuple[float, float]] = []
+        self.is_active = False  # active when user starts gesture test mode
+        self.load_model()
+
+    def load_model(self) -> bool:
+        if MODEL_PATH.exists():
+            try:
+                data = joblib.load(MODEL_PATH)
+                self.model = data["model"]
+                self.classes = data["classes"]
+                logger.info(
+                    "GestureClassifier loaded model with classes: %s", self.classes
+                )
+                return True
+            except Exception as e:
+                logger.error("Failed to load model from %s: %s", MODEL_PATH, e)
+                self.model = None
+                return False
+        logger.warning("No trained model found at %s", MODEL_PATH)
+        return False
+
+    def start_inference(self):
+        self.is_active = True
+        self.points = []
+        logger.info("Gesture test / inference mode activated.")
+
+    def stop_inference(self):
+        self.is_active = False
+        self.points = []
+        logger.info("Gesture test / inference mode deactivated.")
+
+    def add_point(self, x: float | None, y: float | None):
+        if self.is_active and x is not None and y is not None:
+            self.points.append((round(x, 2), round(y, 2)))
+
+    def classify(self) -> dict | None:
+        """Classifies accumulated gesture points and returns top predictions."""
+        if not self.model:
+            self.load_model()
+            if not self.model:
+                return {
+                    "inference_error": "No trained model found. Please train the model first."
+                }
+
+        if len(self.points) < 4:
+            return {"inference_error": "Gesture too short (less than 4 valid points)."}
+
+        feats = extract_features(self.points)
+        if feats is None:
+            return {"inference_error": "Unable to extract features from points."}
+
+        # Predict probabilities
+        X = np.array([feats], dtype=np.float32)
+        probs = self.model.predict_proba(X)[0]
+        top_indices = np.argsort(probs)[::-1]
+
+        predictions = []
+        for idx in top_indices:
+            predictions.append(
+                {
+                    "letter": self.classes[idx],
+                    "confidence": round(float(probs[idx]), 3),
+                }
+            )
+
+        best = predictions[0]
+        logger.info(
+            "Gesture classified as '%s' (%0.1f%% confidence, %d points)",
+            best["letter"],
+            best["confidence"] * 100,
+            len(self.points),
+        )
+        return {
+            "predicted_letter": best["letter"],
+            "confidence": best["confidence"],
+            "predictions": predictions[:4],
+            "points_count": len(self.points),
+        }
+
+
 recorder = GestureRecorder()
+classifier = GestureClassifier()
 
 
 def resolve_pythagorean_axis(
@@ -376,6 +467,9 @@ async def read_serial_loop():
                         if rec_event:
                             await manager.broadcast(rec_event)
 
+                        # Feed valid points to classifier if test/inference mode is active
+                        classifier.add_point(meas_x, meas_y)
+
                         payload = {
                             "status": "connected",
                             # Filtered values paired per axis
@@ -392,6 +486,8 @@ async def read_serial_loop():
                             "total_width": TOTAL_WIDTH_CM,
                             "recording_state": recorder.state,
                             "recording_letter": recorder.target_letter,
+                            "inference_active": classifier.is_active,
+                            "inference_points": len(classifier.points),
                         }
                         await manager.broadcast(payload)
                     except ValueError:
@@ -473,6 +569,37 @@ async def websocket_endpoint(websocket: WebSocket):
                     cancel_event = recorder.cancel()
                     if cancel_event:
                         await manager.broadcast(cancel_event)
+                elif action == "start_inference":
+                    # If recording was on, stop it
+                    if recorder.state != "idle":
+                        recorder.cancel()
+                    classifier.start_inference()
+                    await manager.broadcast(
+                        {
+                            "inference_status": "active",
+                            "message": "Draw gesture now. Click 'Classify' or finish movement.",
+                        }
+                    )
+                elif action == "classify_gesture":
+                    res = classifier.classify()
+                    classifier.stop_inference()
+                    if res:
+                        await manager.broadcast({"inference_result": res})
+                elif action == "stop_inference":
+                    classifier.stop_inference()
+                    await manager.broadcast({"inference_status": "idle"})
+                elif action == "train_model":
+                    # Run training in background thread
+                    from train_classifier import train_and_save
+
+                    await asyncio.to_thread(train_and_save)
+                    reloaded = classifier.load_model()
+                    await manager.broadcast(
+                        {
+                            "train_status": "completed" if reloaded else "failed",
+                            "classes": classifier.classes,
+                        }
+                    )
             except json.JSONDecodeError:
                 pass
     except WebSocketDisconnect:
