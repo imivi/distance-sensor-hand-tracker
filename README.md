@@ -109,7 +109,8 @@ norm_y = ((y - min_y) / height) * 5
 ├── models/
 │   └── gesture_rf.joblib     # Serialized trained scikit-learn model
 ├── recordings/
-│   └── gestures.csv          # Recorded gesture dataset
+│   ├── gestures.csv          # Recorded gesture dataset (raw point trajectories)
+│   └── training_matrix.csv   # Processed 39D training matrix (X features + y labels)
 ├── docs/assets/              # SVG architecture and pipeline diagrams
 ├── platformio.ini            # PlatformIO board & build configuration
 └── pyproject.toml            # Python project dependencies
