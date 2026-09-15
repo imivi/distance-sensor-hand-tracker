@@ -1,0 +1,11 @@
+[project]
+name = "ultrasonic-hand-gestures"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]>=0.141.1",
+    "pyserial>=3.5",
+    "uvicorn>=0.53.0",
+]

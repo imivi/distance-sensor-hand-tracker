@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2D Ultrasonic Gesture Tracking (4 Sensors)</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --panel-bg: #f1f5f9;
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --border-subtle: #edf2f7;
+
+      --top-color: #0284c7;
+      --bottom-color: #9333ea;
+      --left-color: #d97706;
+      --right-color: #db2777;
+
+      --target-color: #059669;
+      --target-glow: rgba(5, 150, 105, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 20px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .status-dot.connected {
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .layout-wrapper {
+      display: flex;
+      flex-direction: row;
+      gap: 28px;
+      max-width: 1040px;
+      width: 100%;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    /* 2D Canvas Arena Area */
+    .arena-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .arena-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* Container for 2D Arena + Vertical Bar */
+    .arena-row {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .arena-frame {
+      position: relative;
+      width: 392px; /* 49 cm * 8px/cm */
+      height: 440px; /* 55 cm * 8px/cm */
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    /* Separate 1D Axis Bars */
+    .axis-bar-v {
+      width: 54px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 4px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .axis-bar-h {
+      width: 392px;
+      height: 52px;
+      margin-top: 14px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 14px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .axis-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--muted);
+      user-select: none;
+    }
+
+    .axis-track-v {
+      position: absolute;
+      top: 36px;
+      bottom: 36px;
+      left: 50%;
+      width: 6px;
+      transform: translateX(-50%);
+      background: #e2e8f0;
+      border-radius: 999px;
+    }
+
+    .axis-track-h {
+      position: absolute;
+      left: 36px;
+      right: 36px;
+      top: 50%;
+      height: 6px;
+      transform: translateY(-50%);
+      background: #e2e8f0;
+      border-radius: 999px;
+    }
+
+    .axis-thumb-v {
+      position: absolute;
+      left: 50%;
+      width: 34px;
+      height: 20px;
+      transform: translate(-50%, -50%);
+      background: #ffffff;
+      border: 2px solid var(--target-color);
+      box-shadow: 0 2px 5px rgba(5, 150, 105, 0.25);
+      border-radius: 6px;
+      transition: top 0.08s ease-out, opacity 0.2s;
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--target-color);
+    }
+
+    .axis-thumb-h {
+      position: absolute;
+      top: 50%;
+      height: 34px;
+      width: 20px;
+      transform: translate(-50%, -50%);
+      background: #ffffff;
+      border: 2px solid var(--target-color);
+      box-shadow: 0 2px 5px rgba(5, 150, 105, 0.25);
+      border-radius: 6px;
+      transition: left 0.08s ease-out, opacity 0.2s;
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--target-color);
+    }
+
+    /* Sensor edge bars */
+    .sensor-edge {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      z-index: 10;
+    }
+
+    .edge-top {
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 26px;
+      background: #f0f9ff;
+      border-bottom: 2px solid var(--top-color);
+      color: var(--top-color);
+    }
+
+    .edge-bottom {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 26px;
+      background: #faf5ff;
+      border-top: 2px solid var(--bottom-color);
+      color: var(--bottom-color);
+    }
+
+    .edge-left {
+      top: 26px;
+      bottom: 26px;
+      left: 0;
+      width: 26px;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      background: #fffbeb;
+      border-left: 2px solid var(--left-color);
+      color: var(--left-color);
+    }
+
+    .edge-right {
+      top: 26px;
+      bottom: 26px;
+      right: 0;
+      width: 26px;
+      writing-mode: vertical-rl;
+      background: #fdf2f8;
+      border-right: 2px solid var(--right-color);
+      color: var(--right-color);
+    }
+
+    /* Arena Grid Lines */
+    .arena-grid {
+      position: absolute;
+      top: 26px;
+      left: 26px;
+      right: 26px;
+      bottom: 26px;
+      background-image: 
+        radial-gradient(circle, #cbd5e1 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+    }
+
+    /* Target Hand Indicator */
+    .hand-cursor {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      background: #ffffff;
+      border: 2.5px solid var(--target-color);
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: left 0.08s ease-out, top 0.08s ease-out, opacity 0.2s;
+      opacity: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--target-color);
+      font-size: 0.85rem;
+    }
+
+    /* Echo Projection Beams */
+    .beam-v {
+      position: absolute;
+      left: 0;
+      right: 0;
+      width: 1.5px;
+      margin: 0 auto;
+      background: rgba(5, 150, 105, 0.4);
+      pointer-events: none;
+      z-index: 15;
+    }
+    .beam-h {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      height: 1.5px;
+      margin: auto 0;
+      background: rgba(5, 150, 105, 0.4);
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    /* Metrics Grid & Info Side */
+    .stats-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 320px;
+    }
+
+    .coords-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .coords-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .coords-display {
+      display: flex;
+      gap: 24px;
+      align-items: baseline;
+    }
+
+    .coord-val {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .sensor-cross-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .sensor-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .pos-top    { grid-column: 2; grid-row: 1; border-top: 3px solid var(--top-color); }
+    .pos-left   { grid-column: 1; grid-row: 2; border-top: 3px solid var(--left-color); }
+    .pos-center {
+      grid-column: 2;
+      grid-row: 2;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: #f8fafc;
+      min-height: 80px;
+    }
+    .pos-right  { grid-column: 3; grid-row: 2; border-top: 3px solid var(--right-color); }
+    .pos-bottom { grid-column: 2; grid-row: 3; border-top: 3px solid var(--bottom-color); }
+
+    .sensor-card-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .sensor-card-val {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 3px;
+    }
+
+    .sensor-card-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .pos-top .sensor-card-title    { color: var(--top-color); }
+    .pos-bottom .sensor-card-title { color: var(--bottom-color); }
+    .pos-left .sensor-card-title   { color: var(--left-color); }
+    .pos-right .sensor-card-title  { color: var(--right-color); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="badge">
+      <div id="statusDot" class="status-dot"></div>
+      <span id="statusText">Connecting...</span>
+    </div>
+  </header>
+
+  <div class="layout-wrapper">
+    <!-- 2D Position Box -->
+    <div class="arena-card">
+      <div class="arena-title">XY Plane (49 × 55 cm)</div>
+      
+      <div class="arena-row">
+        <div>
+          <div class="arena-frame" id="arena">
+            <!-- Sensor edges -->
+            <div class="sensor-edge edge-top">S1 TOP (55 cm)</div>
+            <div class="sensor-edge edge-bottom">S2 BOTTOM (0 cm)</div>
+            <div class="sensor-edge edge-left">S3 LEFT (0 cm)</div>
+            <div class="sensor-edge edge-right">S4 RIGHT (49 cm)</div>
+
+            <div class="arena-grid" id="grid"></div>
+
+            <!-- Dynamic tracking beams & hand cursor -->
+            <div class="beam-v" id="beamV"></div>
+            <div class="beam-h" id="beamH"></div>
+            <div class="hand-cursor" id="handCursor">✋</div>
+          </div>
+
+          <!-- Separate Horizontal 1D Axis Bar -->
+          <div class="axis-bar-h" id="barH">
+            <span class="axis-label" style="color: var(--left-color);">0 cm</span>
+            <div class="axis-track-h"></div>
+            <div class="axis-thumb-h" id="thumbH">X</div>
+            <span class="axis-label" style="color: var(--right-color);">49 cm</span>
+          </div>
+        </div>
+
+        <!-- Separate Vertical 1D Axis Bar -->
+        <div class="axis-bar-v" id="barV">
+          <span class="axis-label" style="color: var(--top-color);">55 cm</span>
+          <div class="axis-track-v"></div>
+          <div class="axis-thumb-v" id="thumbV">Y</div>
+          <span class="axis-label" style="color: var(--bottom-color);">0 cm</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Metrics Grid -->
+    <div class="stats-col">
+      <div class="coords-card">
+        <div class="coords-title">Calculated Hand Position (X, Y)</div>
+        <div class="coords-display">
+          <div><span style="color: var(--muted); font-size: 0.9rem;">X: </span><span id="posX" class="coord-val">--</span> <span style="font-size: 0.9rem; color: var(--muted)">cm</span></div>
+          <div><span style="color: var(--muted); font-size: 0.9rem;">Y: </span><span id="posY" class="coord-val">--</span> <span style="font-size: 0.9rem; color: var(--muted)">cm</span></div>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--muted); margin-top: 6px;" id="posInfo">Waiting for sensor input...</div>
+      </div>
+
+      <!-- Spatial D-pad Cross Layout Matching Physical Sensor Placement -->
+      <div class="sensor-cross-layout">
+        <!-- Sensor 1: TOP -->
+        <div class="sensor-card pos-top">
+          <div class="sensor-card-title">Sensor 1 (Top)</div>
+          <div class="sensor-card-val" id="valS1">-- cm</div>
+          <div class="sensor-card-sub" id="rawS1">Raw: --</div>
+        </div>
+
+        <!-- Sensor 3: LEFT -->
+        <div class="sensor-card pos-left">
+          <div class="sensor-card-title">Sensor 3 (Left)</div>
+          <div class="sensor-card-val" id="valS3">-- cm</div>
+          <div class="sensor-card-sub" id="rawS3">Raw: --</div>
+        </div>
+
+        <!-- Center Crosshair / Label -->
+        <div class="pos-center">Sensors</div>
+
+        <!-- Sensor 4: RIGHT -->
+        <div class="sensor-card pos-right">
+          <div class="sensor-card-title">Sensor 4 (Right)</div>
+          <div class="sensor-card-val" id="valS4">-- cm</div>
+          <div class="sensor-card-sub" id="rawS4">Raw: --</div>
+        </div>
+
+        <!-- Sensor 2: BOTTOM -->
+        <div class="sensor-card pos-bottom">
+          <div class="sensor-card-title">Sensor 2 (Bottom)</div>
+          <div class="sensor-card-val" id="valS2">-- cm</div>
+          <div class="sensor-card-sub" id="rawS2">Raw: --</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let TOTAL_HEIGHT = 55.0; // Y axis (cm)
+    let TOTAL_WIDTH = 49.0;  // X axis (cm)
+
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+
+    const valS1 = document.getElementById("valS1");
+    const valS2 = document.getElementById("valS2");
+    const valS3 = document.getElementById("valS3");
+    const valS4 = document.getElementById("valS4");
+
+    const rawS1 = document.getElementById("rawS1");
+    const rawS2 = document.getElementById("rawS2");
+    const rawS3 = document.getElementById("rawS3");
+    const rawS4 = document.getElementById("rawS4");
+
+    const posX = document.getElementById("posX");
+    const posY = document.getElementById("posY");
+    const posInfo = document.getElementById("posInfo");
+
+    const handCursor = document.getElementById("handCursor");
+    const beamV = document.getElementById("beamV");
+    const beamH = document.getElementById("beamH");
+    const arena = document.getElementById("arena");
+
+    const thumbV = document.getElementById("thumbV");
+    const thumbH = document.getElementById("thumbH");
+    const barV = document.getElementById("barV");
+    const barH = document.getElementById("barH");
+
+    function resolveAxis(sStart, sEnd, totalDist) {
+      if (sStart !== null && sEnd !== null) {
+        return (sStart + (totalDist - sEnd)) / 2.0;
+      } else if (sStart !== null && sStart <= totalDist) {
+        return sStart;
+      } else if (sEnd !== null && sEnd <= totalDist) {
+        return totalDist - sEnd;
+      }
+      return null;
+    }
+
+    function connectWs() {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      const ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        statusDot.classList.add("connected");
+        statusText.textContent = "Live Stream Active";
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+
+          if (data.status === "disconnected") {
+            statusDot.classList.remove("connected");
+            statusText.textContent = data.message || "Disconnected";
+            return;
+          }
+
+          statusDot.classList.add("connected");
+          statusText.textContent = "Live Stream Active";
+
+          if (data.total_height) TOTAL_HEIGHT = data.total_height;
+          if (data.total_width) TOTAL_WIDTH = data.total_width;
+
+          const s1 = data.s1; // Top
+          const s2 = data.s2; // Bottom
+          const s3 = data.s3; // Left
+          const s4 = data.s4; // Right
+
+          // Update card texts
+          valS1.textContent = s1 !== null ? `${s1.toFixed(1)} cm` : "---";
+          valS2.textContent = s2 !== null ? `${s2.toFixed(1)} cm` : "---";
+          valS3.textContent = s3 !== null ? `${s3.toFixed(1)} cm` : "---";
+          valS4.textContent = s4 !== null ? `${s4.toFixed(1)} cm` : "---";
+
+          rawS1.textContent = `Raw: ${data.raw_s1 !== null ? data.raw_s1.toFixed(1) + ' cm' : '---'}`;
+          rawS2.textContent = `Raw: ${data.raw_s2 !== null ? data.raw_s2.toFixed(1) + ' cm' : '---'}`;
+          rawS3.textContent = `Raw: ${data.raw_s3 !== null ? data.raw_s3.toFixed(1) + ' cm' : '---'}`;
+          rawS4.textContent = `Raw: ${data.raw_s4 !== null ? data.raw_s4.toFixed(1) + ' cm' : '---'}`;
+
+          // Calculate Hand XY in cm
+          // Y=0 at bottom (Sensor 2), Y=TOTAL_HEIGHT at top (Sensor 1)
+          const targetY = resolveAxis(s2, s1, TOTAL_HEIGHT); // origin at bottom (s2)
+          const targetX = resolveAxis(s3, s4, TOTAL_WIDTH);  // origin at left (s3)
+
+          posX.textContent = targetX !== null ? targetX.toFixed(1) : "--";
+          posY.textContent = targetY !== null ? targetY.toFixed(1) : "--";
+
+          // --- Update Separate 1D Bars ---
+          // Horizontal Bar (0 cm left -> 49 cm right)
+          if (targetX !== null) {
+            const trackHPadding = 36; // px padding on left and right
+            const trackW = barH.clientWidth - (trackHPadding * 2);
+            const clampedX = Math.max(0, Math.min(targetX, TOTAL_WIDTH));
+            const thumbXPx = trackHPadding + (clampedX / TOTAL_WIDTH) * trackW;
+            thumbH.style.left = `${thumbXPx}px`;
+            thumbH.style.opacity = "1";
+          } else {
+            thumbH.style.opacity = "0";
+          }
+
+          // Vertical Bar (0 cm bottom -> 55 cm top)
+          if (targetY !== null) {
+            const trackVPadding = 36; // px padding on top and bottom
+            const trackH = barV.clientHeight - (trackVPadding * 2);
+            const clampedY = Math.max(0, Math.min(targetY, TOTAL_HEIGHT));
+            // y=0 is at bottom, so distance from top = (TOTAL_HEIGHT - clampedY)
+            const thumbYPx = trackVPadding + ((TOTAL_HEIGHT - clampedY) / TOTAL_HEIGHT) * trackH;
+            thumbV.style.top = `${thumbYPx}px`;
+            thumbV.style.opacity = "1";
+          } else {
+            thumbV.style.opacity = "0";
+          }
+
+          // --- Update 2D Arena ---
+          const edgePx = 28;
+          const usableW = arena.clientWidth - (edgePx * 2);
+          const usableH = arena.clientHeight - (edgePx * 2);
+
+          if (targetX !== null || targetY !== null) {
+            // Default center if one axis is missing
+            const plotX = targetX !== null ? Math.max(0, Math.min(targetX, TOTAL_WIDTH)) : TOTAL_WIDTH / 2.0;
+            const plotY = targetY !== null ? Math.max(0, Math.min(targetY, TOTAL_HEIGHT)) : TOTAL_HEIGHT / 2.0;
+
+            const pxLeft = edgePx + (plotX / TOTAL_WIDTH) * usableW;
+            // Screen Y is 0 at top, so invert plotY to position on canvas:
+            const pxTop = edgePx + ((TOTAL_HEIGHT - plotY) / TOTAL_HEIGHT) * usableH;
+
+            handCursor.style.left = `${pxLeft}px`;
+            handCursor.style.top = `${pxTop}px`;
+            handCursor.style.opacity = "1";
+
+            // Update projection crosshairs
+            beamV.style.left = `${pxLeft}px`;
+            beamV.style.top = `${edgePx}px`;
+            beamV.style.height = `${usableH}px`;
+            beamV.style.display = "block";
+
+            beamH.style.top = `${pxTop}px`;
+            beamH.style.left = `${edgePx}px`;
+            beamH.style.width = `${usableW}px`;
+            beamH.style.display = "block";
+
+            let axesDetected = [];
+            if (targetX !== null) axesDetected.push("X (Horizontal)");
+            if (targetY !== null) axesDetected.push("Y (Vertical)");
+            posInfo.textContent = `Active Tracking: ${axesDetected.join(" + ")}`;
+          } else {
+            handCursor.style.opacity = "0";
+            beamV.style.display = "none";
+            beamH.style.display = "none";
+            posInfo.textContent = "No hand detected in zone";
+          }
+        } catch (e) {
+          console.error("Error processing websocket frame:", e);
+        }
+      };
+
+      ws.onclose = () => {
+        statusDot.classList.remove("connected");
+        statusText.textContent = "Reconnecting...";
+        setTimeout(connectWs, 2000);
+      };
+
+      ws.onerror = (err) => {
+        console.error("WebSocket error:", err);
+        ws.close();
+      };
+    }
+
+    connectWs();
+  </script>
+</body>
+</html>
