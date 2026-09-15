@@ -20,7 +20,7 @@ logger = logging.getLogger("sensor_server")
 
 TOTAL_HEIGHT_CM = 51.0
 TOTAL_WIDTH_CM = 49.0
-SERIAL_BAUD = 9600
+SERIAL_BAUD = 115200
 SERIAL_PORT = None
 WINDOW_SIZE = 5
 
@@ -122,6 +122,190 @@ class SensorFilter:
         return round(statistics.median(self.window), 1)
 
 
+import csv
+from datetime import datetime
+from pathlib import Path
+import uuid
+
+RECORDINGS_DIR = Path(__file__).parent / "recordings"
+RECORDINGS_DIR.mkdir(exist_ok=True)
+CSV_FILE_PATH = RECORDINGS_DIR / "gestures.csv"
+
+
+class GestureRecorder:
+    def __init__(self):
+        self.target_letter: str | None = None
+        self.state: str = "idle"  # "idle", "waiting_for_hand", "recording"
+        self.samples: list[dict] = []
+        self.start_time: float | None = None
+        self.last_x: float | None = None
+        self.last_y: float | None = None
+        self.current_recording_id: str | None = None
+
+    def start(self, letter: str):
+        self.target_letter = letter.upper()
+        self.state = "waiting_for_hand"
+        self.samples = []
+        self.start_time = None
+        self.last_x = None
+        self.last_y = None
+        self.current_recording_id = str(uuid.uuid4())[:8]  # Unique 8-character ID
+        logger.info(
+            "Recording requested for letter '%s' (ID: %s, waiting for hand)",
+            self.target_letter,
+            self.current_recording_id,
+        )
+
+    def stop(self) -> dict | None:
+        """Stops recording immediately and appends to the unified CSV file."""
+        if self.state == "idle":
+            return None
+
+        saved_letter = self.target_letter
+        recording_id = self.current_recording_id
+        sample_count = len(self.samples)
+        saved_filename = self._save_csv() if sample_count > 0 else None
+
+        self.state = "idle"
+        self.target_letter = None
+        self.samples = []
+        self.start_time = None
+        self.last_x = None
+        self.last_y = None
+        self.current_recording_id = None
+
+        if saved_filename:
+            logger.info(
+                "Recording stopped! Saved %d points for letter '%s' (ID: %s) to %s",
+                sample_count,
+                saved_letter,
+                recording_id,
+                saved_filename,
+            )
+            return {
+                "recording_status": "finished",
+                "letter": saved_letter,
+                "recording_id": recording_id,
+                "filename": saved_filename,
+                "samples": sample_count,
+            }
+        else:
+            logger.info("Recording stopped by user with 0 samples. Discarded.")
+            return {
+                "recording_status": "cancelled",
+                "letter": saved_letter,
+            }
+
+    def cancel(self) -> dict | None:
+        """Aborts recording immediately without saving any samples to CSV."""
+        if self.state == "idle":
+            return None
+
+        saved_letter = self.target_letter
+        sample_count = len(self.samples)
+
+        self.state = "idle"
+        self.target_letter = None
+        self.samples = []
+        self.start_time = None
+        self.last_x = None
+        self.last_y = None
+        self.current_recording_id = None
+
+        logger.info(
+            "Recording cancelled by user for letter '%s' (discarded %d samples)",
+            saved_letter,
+            sample_count,
+        )
+        return {
+            "recording_status": "cancelled",
+            "letter": saved_letter,
+            "samples": sample_count,
+        }
+
+    def process_point(
+        self, target_x: float | None, target_y: float | None
+    ) -> dict | None:
+        """Processes current hand position and logs points while recording.
+        Only saves full pairs of (X, Y) coordinates; skips if any axis is inactive."""
+        if self.state == "idle":
+            return None
+
+        has_full_pair = target_x is not None and target_y is not None
+
+        if self.state == "waiting_for_hand":
+            if has_full_pair:
+                self.state = "recording"
+                self.start_time = asyncio.get_event_loop().time()
+                self.samples.append(
+                    {
+                        "timestamp": 0.0,
+                        "x": round(target_x, 2),
+                        "y": round(target_y, 2),
+                    }
+                )
+                logger.info(
+                    "Hand detected with full XY pair! Recording started for letter '%s' (ID: %s)",
+                    self.target_letter,
+                    self.current_recording_id,
+                )
+                return {
+                    "recording_status": "recording",
+                    "letter": self.target_letter,
+                    "recording_id": self.current_recording_id,
+                }
+            return None
+
+        if self.state == "recording":
+            # Only save full pairs of (X, Y) values
+            if has_full_pair:
+                t_rel = asyncio.get_event_loop().time() - self.start_time
+                self.samples.append(
+                    {
+                        "timestamp": round(t_rel, 3),
+                        "x": round(target_x, 2),
+                        "y": round(target_y, 2),
+                    }
+                )
+            return None
+
+    def _save_csv(self) -> str:
+        file_exists = CSV_FILE_PATH.exists()
+        timestamp_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        with open(CSV_FILE_PATH, "a", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            if not file_exists:
+                writer.writerow(
+                    ["recording_id", "created_at", "letter", "time_s", "x_cm", "y_cm"]
+                )
+            for s in self.samples:
+                writer.writerow(
+                    [
+                        self.current_recording_id,
+                        timestamp_now,
+                        self.target_letter,
+                        s["timestamp"],
+                        s["x"],
+                        s["y"],
+                    ]
+                )
+
+        return CSV_FILE_PATH.name
+
+
+recorder = GestureRecorder()
+
+
+def resolve_pythagorean_axis(
+    d_start: float | None, d_end: float | None, total_dist: float
+) -> float | None:
+    if d_start is not None and d_end is not None:
+        p = (d_start**2 - d_end**2 + total_dist**2) / (2.0 * total_dist)
+        return max(0.0, min(p, total_dist))
+    return None
+
+
 async def read_serial_loop():
     while True:
         port = find_serial_port()
@@ -184,6 +368,14 @@ async def read_serial_loop():
                             s3 = None
                             s4 = None
 
+                        # Compute Pythagorean position for recording
+                        meas_y = resolve_pythagorean_axis(s2, s1, TOTAL_HEIGHT_CM)
+                        meas_x = resolve_pythagorean_axis(s3, s4, TOTAL_WIDTH_CM)
+
+                        rec_event = recorder.process_point(meas_x, meas_y)
+                        if rec_event:
+                            await manager.broadcast(rec_event)
+
                         payload = {
                             "status": "connected",
                             # Filtered values paired per axis
@@ -198,6 +390,8 @@ async def read_serial_loop():
                             "raw_s4": raw_s4 if raw_s4 >= 0 else None,
                             "total_height": TOTAL_HEIGHT_CM,
                             "total_width": TOTAL_WIDTH_CM,
+                            "recording_state": recorder.state,
+                            "recording_letter": recorder.target_letter,
                         }
                         await manager.broadcast(payload)
                     except ValueError:
@@ -248,8 +442,39 @@ async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            # Keep connection alive; accept any incoming ping/messages from client
-            await websocket.receive_text()
+            text = await websocket.receive_text()
+            try:
+                msg = json.loads(text)
+                action = msg.get("action")
+                if action == "start_recording":
+                    letter = str(msg.get("letter", "")).upper()
+                    if letter in "CLOZSUV" and len(letter) == 1:
+                        # If already recording or waiting on this exact letter, stop it
+                        if (
+                            recorder.state != "idle"
+                            and recorder.target_letter == letter
+                        ):
+                            stop_event = recorder.stop()
+                            if stop_event:
+                                await manager.broadcast(stop_event)
+                        else:
+                            recorder.start(letter)
+                            await manager.broadcast(
+                                {
+                                    "recording_status": "waiting_for_hand",
+                                    "letter": letter,
+                                }
+                            )
+                elif action == "stop_recording":
+                    stop_event = recorder.stop()
+                    if stop_event:
+                        await manager.broadcast(stop_event)
+                elif action == "cancel_recording":
+                    cancel_event = recorder.cancel()
+                    if cancel_event:
+                        await manager.broadcast(cancel_event)
+            except json.JSONDecodeError:
+                pass
     except WebSocketDisconnect:
         manager.disconnect(websocket)
     except Exception:

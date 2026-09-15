@@ -123,7 +123,7 @@
     .arena-frame {
       position: relative;
       width: 392px; /* 49 cm * 8px/cm */
-      height: 440px; /* 55 cm * 8px/cm */
+      height: 408px; /* 51 cm * 8px/cm */
       background: #f8fafc;
       border: 1px solid #cbd5e1;
       border-radius: 10px;
@@ -298,6 +298,17 @@
       background-size: 24px 24px;
     }
 
+    /* Live Recording Trail Canvas */
+    .trail-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 12;
+    }
+
     /* Target Hand Indicator */
     .hand-cursor {
       position: absolute;
@@ -445,6 +456,138 @@
     .pos-bottom .sensor-card-title { color: var(--bottom-color); }
     .pos-left .sensor-card-title   { color: var(--left-color); }
     .pos-right .sensor-card-title  { color: var(--right-color); }
+
+    /* Letter Recording Toolbar */
+    .record-toolbar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .record-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-letter {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease-in-out;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      user-select: none;
+    }
+
+    .btn-letter:hover {
+      border-color: var(--target-color);
+      color: var(--target-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(5, 150, 105, 0.15);
+    }
+
+    .btn-letter:active {
+      transform: translateY(0);
+    }
+
+    .btn-letter.active {
+      background: var(--target-color);
+      border-color: var(--target-color);
+      color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25);
+      animation: pulseRecord 1.5s infinite;
+    }
+
+    @keyframes pulseRecord {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+      70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    .btn-letter.recording {
+      background: #ef4444 !important;
+      border-color: #ef4444 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3) !important;
+      animation: pulseRecord 1.2s infinite;
+    }
+
+    .btn-cancel {
+      height: 46px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      color: #64748b;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease-in-out;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      user-select: none;
+    }
+
+    .btn-cancel:hover {
+      border-color: #ef4444;
+      color: #ef4444;
+      background: #fef2f2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(239, 68, 68, 0.15);
+    }
+
+    .btn-cancel:active {
+      transform: translateY(0);
+    }
+
+    .btn-cancel.show {
+      display: inline-flex;
+    }
+
+    .record-banner {
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .record-banner.show {
+      display: inline-flex;
+    }
+
+    .record-dot-anim {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: blinkDot 0.8s infinite;
+    }
+
+    @keyframes blinkDot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
   </style>
 </head>
 <body>
@@ -455,21 +598,41 @@
     </div>
   </header>
 
+  <!-- Letter Recording Section -->
+  <div class="record-toolbar">
+    <div class="record-buttons" id="letterButtons">
+      <button class="btn-letter" data-letter="C">C</button>
+      <button class="btn-letter" data-letter="L">L</button>
+      <button class="btn-letter" data-letter="O">O</button>
+      <button class="btn-letter" data-letter="Z">Z</button>
+      <button class="btn-letter" data-letter="S">S</button>
+      <button class="btn-letter" data-letter="U">U</button>
+      <button class="btn-letter" data-letter="N">N</button>
+      <button class="btn-letter" data-letter="P">P</button>
+      <button class="btn-cancel" id="btnCancel" title="Discard current recording">✕ Cancel</button>
+    </div>
+    <div class="record-banner" id="recordBanner">
+      <div class="record-dot-anim" id="recordDot"></div>
+      <span id="recordBannerText">Ready</span>
+    </div>
+  </div>
+
   <div class="layout-wrapper">
     <!-- 2D Position Box -->
     <div class="arena-card">
-      <div class="arena-title">XY Plane (49 × 55 cm)</div>
+      <div class="arena-title">XY Plane (49 × 51 cm)</div>
       
       <div class="arena-row">
         <div>
           <div class="arena-frame" id="arena">
             <!-- Sensor edges -->
-            <div class="sensor-edge edge-top">S1 TOP (55 cm)</div>
+            <div class="sensor-edge edge-top">S1 TOP (51 cm)</div>
             <div class="sensor-edge edge-bottom">S2 BOTTOM (0 cm)</div>
             <div class="sensor-edge edge-left">S3 LEFT (0 cm)</div>
             <div class="sensor-edge edge-right">S4 RIGHT (49 cm)</div>
 
             <div class="arena-grid" id="grid"></div>
+            <canvas class="trail-canvas" id="trailCanvas"></canvas>
 
             <!-- Dynamic tracking beams & hand cursor -->
             <div class="beam-v" id="beamV"></div>
@@ -488,7 +651,7 @@
 
         <!-- Separate Vertical 1D Axis Bar -->
         <div class="axis-bar-v" id="barV">
-          <span class="axis-label" style="color: var(--top-color);">55 cm</span>
+          <span class="axis-label" style="color: var(--top-color);">51 cm</span>
           <div class="axis-track-v"></div>
           <div class="axis-thumb-v" id="thumbV">Y</div>
           <span class="axis-label" style="color: var(--bottom-color);">0 cm</span>
@@ -544,7 +707,7 @@
   </div>
 
   <script>
-    let TOTAL_HEIGHT = 55.0; // Y axis (cm)
+    let TOTAL_HEIGHT = 51.0; // Y axis (cm)
     let TOTAL_WIDTH = 49.0;  // X axis (cm)
 
     const statusDot = document.getElementById("statusDot");
@@ -568,6 +731,94 @@
     const beamV = document.getElementById("beamV");
     const beamH = document.getElementById("beamH");
     const arena = document.getElementById("arena");
+    const trailCanvas = document.getElementById("trailCanvas");
+    const trailCtx = trailCanvas ? trailCanvas.getContext("2d") : null;
+
+    let recordedPoints = []; // [{x, y}] accumulated during active recording
+
+    function syncTrailCanvasSize() {
+      if (!trailCanvas || !arena) return;
+      const w = arena.clientWidth;
+      const h = arena.clientHeight;
+      if (w > 0 && h > 0 && (trailCanvas.width !== w || trailCanvas.height !== h)) {
+        trailCanvas.width = w;
+        trailCanvas.height = h;
+        drawTrail();
+      }
+    }
+    window.addEventListener("resize", syncTrailCanvasSize);
+
+    function clearTrail() {
+      recordedPoints = [];
+      if (trailCtx && trailCanvas) {
+        trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+      }
+    }
+
+    function drawTrail() {
+      if (!trailCtx || !trailCanvas || !arena) return;
+      trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+
+      if (recordedPoints.length === 0) return;
+
+      const edgePx = 28;
+      const usableW = arena.clientWidth - (edgePx * 2);
+      const usableH = arena.clientHeight - (edgePx * 2);
+
+      // 1. Draw smooth connecting path
+      if (recordedPoints.length > 1) {
+        trailCtx.beginPath();
+        for (let i = 0; i < recordedPoints.length; i++) {
+          const pt = recordedPoints[i];
+          const px = edgePx + (pt.x / TOTAL_WIDTH) * usableW;
+          const py = edgePx + ((TOTAL_HEIGHT - pt.y) / TOTAL_HEIGHT) * usableH;
+          if (i === 0) {
+            trailCtx.moveTo(px, py);
+          } else {
+            trailCtx.lineTo(px, py);
+          }
+        }
+        trailCtx.strokeStyle = "rgba(239, 68, 68, 0.75)";
+        trailCtx.lineWidth = 3;
+        trailCtx.lineCap = "round";
+        trailCtx.lineJoin = "round";
+        trailCtx.stroke();
+      }
+
+      // 2. Draw individual point circles
+      for (let i = 0; i < recordedPoints.length; i++) {
+        const pt = recordedPoints[i];
+        const px = edgePx + (pt.x / TOTAL_WIDTH) * usableW;
+        const py = edgePx + ((TOTAL_HEIGHT - pt.y) / TOTAL_HEIGHT) * usableH;
+
+        trailCtx.beginPath();
+        const isStart = i === 0;
+        const isLatest = i === recordedPoints.length - 1;
+
+        if (isStart) {
+          // Start point: larger green dot
+          trailCtx.arc(px, py, 6, 0, Math.PI * 2);
+          trailCtx.fillStyle = "#10b981";
+          trailCtx.fill();
+          trailCtx.lineWidth = 2;
+          trailCtx.strokeStyle = "#ffffff";
+          trailCtx.stroke();
+        } else if (isLatest) {
+          // Latest point: bold red pulse dot
+          trailCtx.arc(px, py, 5, 0, Math.PI * 2);
+          trailCtx.fillStyle = "#ef4444";
+          trailCtx.fill();
+          trailCtx.lineWidth = 2;
+          trailCtx.strokeStyle = "#ffffff";
+          trailCtx.stroke();
+        } else {
+          // Intermediate point
+          trailCtx.arc(px, py, 3.5, 0, Math.PI * 2);
+          trailCtx.fillStyle = "#ef4444";
+          trailCtx.fill();
+        }
+      }
+    }
 
     const thumbV = document.getElementById("thumbV");
     const thumbH = document.getElementById("thumbH");
@@ -594,10 +845,106 @@
       return null;
     }
 
+    const recordBanner = document.getElementById("recordBanner");
+    const recordBannerText = document.getElementById("recordBannerText");
+    const recordDot = document.getElementById("recordDot");
+    const letterButtons = document.querySelectorAll(".btn-letter");
+    const btnCancel = document.getElementById("btnCancel");
+
+    let activeLetter = null;
+    let ws = null;
+
+    letterButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const letter = btn.dataset.letter;
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          if (activeLetter === letter) {
+            // User clicked the same button: stop recording & save
+            ws.send(JSON.stringify({ action: "stop_recording" }));
+          } else {
+            // New recording started
+            ws.send(JSON.stringify({
+              action: "start_recording",
+              letter: letter
+            }));
+            setRecordingUIState("waiting_for_hand", letter);
+          }
+        }
+      });
+    });
+
+    if (btnCancel) {
+      btnCancel.addEventListener("click", () => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ action: "cancel_recording" }));
+          setRecordingUIState("cancelled", activeLetter);
+        }
+      });
+    }
+
+    function setRecordingUIState(state, letter, details) {
+      letterButtons.forEach(btn => {
+        btn.classList.remove("active", "recording");
+        if (letter && btn.dataset.letter === letter) {
+          if (state === "waiting_for_hand") {
+            btn.classList.add("active");
+          } else if (state === "recording") {
+            btn.classList.add("recording");
+          }
+        }
+      });
+
+      if (state === "waiting_for_hand") {
+        activeLetter = letter;
+        clearTrail();
+        syncTrailCanvasSize();
+        btnCancel.classList.add("show");
+        recordBanner.classList.add("show");
+        recordDot.style.background = "#f59e0b"; // Amber waiting
+        recordBannerText.textContent = `Letter '${letter}': Move hand to start (click '${letter}' to save)`;
+      } else if (state === "recording") {
+        activeLetter = letter;
+        syncTrailCanvasSize();
+        btnCancel.classList.add("show");
+        recordBanner.classList.add("show");
+        recordDot.style.background = "#ef4444"; // Red recording
+        recordBannerText.textContent = `Recording '${letter}'... Click '${letter}' to save, or Cancel to quit`;
+      } else if (state === "finished") {
+        activeLetter = null;
+        btnCancel.classList.remove("show");
+        recordBanner.classList.add("show");
+        recordDot.style.background = "#10b981"; // Green saved
+        recordBannerText.textContent = `Saved ${details?.samples || 0} pts to ${details?.filename || 'CSV'}`;
+        setTimeout(() => {
+          if (!activeLetter) {
+            recordBanner.classList.remove("show");
+            clearTrail();
+          }
+        }, 4000);
+      } else if (state === "cancelled") {
+        activeLetter = null;
+        clearTrail();
+        btnCancel.classList.remove("show");
+        recordBanner.classList.add("show");
+        recordDot.style.background = "#94a3b8"; // Gray cancelled
+        recordBannerText.textContent = `Recording discarded without saving.`;
+        setTimeout(() => {
+          if (!activeLetter) {
+            recordBanner.classList.remove("show");
+          }
+        }, 2500);
+      } else {
+        activeLetter = null;
+        clearTrail();
+        btnCancel.classList.remove("show");
+        recordBanner.classList.remove("show");
+      }
+    }
+
     function connectWs() {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const wsUrl = `${protocol}//${window.location.host}/ws`;
-      const ws = new WebSocket(wsUrl);
+      ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
         statusDot.classList.add("connected");
@@ -607,6 +954,12 @@
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
+
+          // Handle recording notifications
+          if (data.recording_status) {
+            setRecordingUIState(data.recording_status, data.letter, data);
+            return;
+          }
 
           if (data.status === "disconnected") {
             statusDot.classList.remove("connected");
@@ -727,6 +1080,12 @@
             if (targetX !== null) axesDetected.push("X (Horizontal)");
             if (targetY !== null) axesDetected.push("Y (Vertical)");
             posInfo.textContent = `Active Tracking: ${axesDetected.join(" + ")}`;
+
+            // If a recording session is currently recording, save full (X, Y) pair to trail
+            if (data.recording_state === "recording" && measuredX !== null && measuredY !== null) {
+              recordedPoints.push({ x: measuredX, y: measuredY });
+              drawTrail();
+            }
           } else {
             handCursor.style.opacity = "0";
             beamV.style.display = "none";
@@ -750,6 +1109,7 @@
       };
     }
 
+    window.addEventListener("DOMContentLoaded", syncTrailCanvasSize);
     connectWs();
   </script>
 </body>

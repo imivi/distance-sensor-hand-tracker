@@ -28,8 +28,8 @@ float readDistance(int trigPin, int echoPin) {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
 
-  // Measure echo pulse (15ms timeout: plenty for 55cm rig while leaving room for HC-SR04 burst + propagation latency)
-  unsigned long duration = pulseIn(echoPin, HIGH, 15000);
+  // Measure echo pulse (8000µs timeout: covers up to ~137cm; plenty for ~50-55cm rig with burst headroom)
+  unsigned long duration = pulseIn(echoPin, HIGH, 8000);
 
   if (duration == 0) {
     return -1.0; // Out of range or no echo
@@ -40,7 +40,7 @@ float readDistance(int trigPin, int echoPin) {
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Vertical sensors
   pinMode(TRIG_PIN_1, OUTPUT);
@@ -58,15 +58,15 @@ void setup() {
 void loop() {
   // Sensor 1 (Top)
   float dist1 = readDistance(TRIG_PIN_1, ECHO_PIN_1);
-  delay(60);
+  delay(18);
 
   // Sensor 2 (Bottom)
   float dist2 = readDistance(TRIG_PIN_2, ECHO_PIN_2);
-  delay(60);
+  delay(18);
 
   // Sensor 3 (Left)
   float dist3 = readDistance(TRIG_PIN_3, ECHO_PIN_3);
-  delay(60);
+  delay(18);
 
   // Sensor 4 (Right)
   float dist4 = readDistance(TRIG_PIN_4, ECHO_PIN_4);
@@ -81,5 +81,5 @@ void loop() {
   Serial.println(dist4, 1);
 
   // Settle delay before next sampling frame
-  delay(60);
+  delay(18);
 }
