@@ -574,13 +574,22 @@
     const barV = document.getElementById("barV");
     const barH = document.getElementById("barH");
 
+    let lastTargetX = null;
+    let lastTargetY = null;
+
+    // Pythagorean difference-of-squares triangulation:
+    // If an object is at coordinate p along an axis of length D with forward/orthogonal offset h:
+    //   d1^2 = p^2 + h^2
+    //   d2^2 = (D - p)^2 + h^2 = D^2 - 2*D*p + p^2 + h^2
+    // Subtracting the two:
+    //   d1^2 - d2^2 = 2*D*p - D^2
+    // Solving for p:
+    //   p = (d1^2 - d2^2 + D^2) / (2 * D)
+    // The orthogonal depth h cancels out completely!
     function resolveAxis(sStart, sEnd, totalDist) {
       if (sStart !== null && sEnd !== null) {
-        return (sStart + (totalDist - sEnd)) / 2.0;
-      } else if (sStart !== null && sStart <= totalDist) {
-        return sStart;
-      } else if (sEnd !== null && sEnd <= totalDist) {
-        return totalDist - sEnd;
+        const p = (Math.pow(sStart, 2) - Math.pow(sEnd, 2) + Math.pow(totalDist, 2)) / (2.0 * totalDist);
+        return Math.max(0, Math.min(p, totalDist));
       }
       return null;
     }
@@ -627,10 +636,34 @@
           rawS3.textContent = `Raw: ${data.raw_s3 !== null ? data.raw_s3.toFixed(1) + ' cm' : '---'}`;
           rawS4.textContent = `Raw: ${data.raw_s4 !== null ? data.raw_s4.toFixed(1) + ' cm' : '---'}`;
 
-          // Calculate Hand XY in cm
-          // Y=0 at bottom (Sensor 2), Y=TOTAL_HEIGHT at top (Sensor 1)
-          const targetY = resolveAxis(s2, s1, TOTAL_HEIGHT); // origin at bottom (s2)
-          const targetX = resolveAxis(s3, s4, TOTAL_WIDTH);  // origin at left (s3)
+          // Calculate raw measured positions per axis
+          const measuredY = resolveAxis(s2, s1, TOTAL_HEIGHT); // origin at bottom (s2)
+          const measuredX = resolveAxis(s3, s4, TOTAL_WIDTH);  // origin at left (s3)
+
+          let targetX = null;
+          let targetY = null;
+
+          if (measuredX !== null && measuredY !== null) {
+            // Both axes active: update both positions and store memory
+            targetX = measuredX;
+            targetY = measuredY;
+            lastTargetX = measuredX;
+            lastTargetY = measuredY;
+          } else if (measuredX !== null && measuredY === null) {
+            // X active, Y inactive: keep old Y position if available
+            targetX = measuredX;
+            targetY = lastTargetY !== null ? lastTargetY : TOTAL_HEIGHT / 2.0;
+            lastTargetX = measuredX;
+          } else if (measuredX === null && measuredY !== null) {
+            // Y active, X inactive: keep old X position if available
+            targetY = measuredY;
+            targetX = lastTargetX !== null ? lastTargetX : TOTAL_WIDTH / 2.0;
+            lastTargetY = measuredY;
+          } else {
+            // Both axes inactive: hand is gone, reset position and memory
+            lastTargetX = null;
+            lastTargetY = null;
+          }
 
           posX.textContent = targetX !== null ? targetX.toFixed(1) : "--";
           posY.textContent = targetY !== null ? targetY.toFixed(1) : "--";

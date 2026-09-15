@@ -18,8 +18,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger("sensor_server")
 
-TOTAL_HEIGHT_CM = 55.0
-TOTAL_WIDTH_CM = 50.0
+TOTAL_HEIGHT_CM = 51.0
+TOTAL_WIDTH_CM = 49.0
 SERIAL_BAUD = 9600
 SERIAL_PORT = None
 WINDOW_SIZE = 5
@@ -170,13 +170,27 @@ async def read_serial_loop():
                         raw_s3 = float(parts[2])
                         raw_s4 = float(parts[3])
 
+                        s1 = filter_s1.update(raw_s1)
+                        s2 = filter_s2.update(raw_s2)
+                        s3 = filter_s3.update(raw_s3)
+                        s4 = filter_s4.update(raw_s4)
+
+                        # If one of the two values on an axis is null, nullify the other
+                        if s1 is None or s2 is None:
+                            s1 = None
+                            s2 = None
+
+                        if s3 is None or s4 is None:
+                            s3 = None
+                            s4 = None
+
                         payload = {
                             "status": "connected",
-                            # Filtered values with outlier jump rejection + rolling median
-                            "s1": filter_s1.update(raw_s1),
-                            "s2": filter_s2.update(raw_s2),
-                            "s3": filter_s3.update(raw_s3),
-                            "s4": filter_s4.update(raw_s4),
+                            # Filtered values paired per axis
+                            "s1": s1,
+                            "s2": s2,
+                            "s3": s3,
+                            "s4": s4,
                             # Raw instantaneous values
                             "raw_s1": raw_s1 if raw_s1 >= 0 else None,
                             "raw_s2": raw_s2 if raw_s2 >= 0 else None,
