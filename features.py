@@ -32,7 +32,7 @@ def extract_features(points: List[Tuple[float, float]]) -> Optional[np.ndarray]:
     width = max_x - min_x
     height = max_y - min_y
 
-    # Prevent division by zero for straight lines
+    # Prevent division by zero for point clusters or straight lines
     denom_x = width if width > 0.5 else 0.5
     denom_y = height if height > 0.5 else 0.5
     aspect_ratio = height / denom_x
@@ -40,9 +40,16 @@ def extract_features(points: List[Tuple[float, float]]) -> Optional[np.ndarray]:
     # 6x6 Occupancy grid
     grid = np.zeros((GRID_SIZE, GRID_SIZE), dtype=np.float32)
 
-    # Normalize coordinates into [0, GRID_SIZE - 1]
-    norm_x = np.clip((xs - min_x) / denom_x * (GRID_SIZE - 1), 0, GRID_SIZE - 1)
-    norm_y = np.clip((ys - min_y) / denom_y * (GRID_SIZE - 1), 0, GRID_SIZE - 1)
+    # Uniform scaling: use the LONGER side to scale both axes equally,
+    # preserving aspect ratio. Then center the gesture in the grid.
+    # This avoids distortion for narrow gestures (e.g., "I" stays thin).
+    scale = max(denom_x, denom_y)
+    center_x = (min_x + max_x) / 2.0
+    center_y = (min_y + max_y) / 2.0
+    half_grid = (GRID_SIZE - 1) / 2.0
+
+    norm_x = np.clip((xs - center_x) / scale * (GRID_SIZE - 1) + half_grid, 0, GRID_SIZE - 1)
+    norm_y = np.clip((ys - center_y) / scale * (GRID_SIZE - 1) + half_grid, 0, GRID_SIZE - 1)
 
     # Mark cells through which points or connecting segments pass
     for i in range(len(points)):

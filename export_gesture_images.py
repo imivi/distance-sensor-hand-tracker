@@ -38,8 +38,14 @@ def compute_occupancy_grid(points: list[tuple[float, float]]) -> tuple[np.ndarra
 
     grid = np.zeros((GRID_SIZE, GRID_SIZE), dtype=np.float32)
 
-    norm_x = np.clip((xs - min_x) / denom_x * (GRID_SIZE - 1), 0, GRID_SIZE - 1)
-    norm_y = np.clip((ys - min_y) / denom_y * (GRID_SIZE - 1), 0, GRID_SIZE - 1)
+    # Uniform scaling preserving aspect ratio + centering
+    scale = max(denom_x, denom_y)
+    center_x = (min_x + max_x) / 2.0
+    center_y = (min_y + max_y) / 2.0
+    half_grid = (GRID_SIZE - 1) / 2.0
+
+    norm_x = np.clip((xs - center_x) / scale * (GRID_SIZE - 1) + half_grid, 0, GRID_SIZE - 1)
+    norm_y = np.clip((ys - center_y) / scale * (GRID_SIZE - 1) + half_grid, 0, GRID_SIZE - 1)
 
     norm_points = list(zip(norm_x, norm_y))
 

@@ -363,6 +363,7 @@ class GestureRecorder:
 import joblib
 import numpy as np
 from features import extract_features
+from train_classifier import filter_outlier_points
 
 MODEL_PATH = Path(__file__).parent / "models" / "gesture_rf.joblib"
 
@@ -416,12 +417,15 @@ class GestureClassifier:
                         "inference_error": "No trained model found. Please train the model first."
                     }
 
-            if len(self.points) < 4:
+            # Apply identical outlier filtering as used during training
+            clean_points = filter_outlier_points(self.points)
+
+            if len(clean_points) < 4:
                 return {
-                    "inference_error": f"Gesture too short ({len(self.points)} points collected, minimum 4 required)."
+                    "inference_error": f"Gesture too short ({len(clean_points)} valid points after filtering, minimum 4 required)."
                 }
 
-            feats = extract_features(self.points)
+            feats = extract_features(clean_points)
             if feats is None:
                 return {"inference_error": "Unable to extract features from points."}
 
