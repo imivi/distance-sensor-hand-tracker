@@ -909,6 +909,16 @@
 
     let recordedPoints = []; // [{x, y}] accumulated during active recording
 
+    // --- Distance-based outlier filter for the drawing trail ---
+    // If two consecutive accepted points are >= this distance apart (cm) the new
+    // point is a sensor spike: discard it completely — don't draw, don't record.
+    const MAX_TRAIL_JUMP_CM = 10;
+    // If this many points IN A ROW are rejected, the reference itself was the spike.
+    // Reset reference to the current point and wipe the bad trail.
+    const MAX_TRAIL_SKIP_RESET = 5;
+    let lastTrailPoint = null;   // { x, y } — last accepted trail point
+    let trailSkipCount = 0;      // consecutive rejection counter
+
     function syncTrailCanvasSize() {
       if (!trailCanvas || !arena) return;
       const w = arena.clientWidth;
@@ -923,6 +933,8 @@
 
     function clearTrail() {
       recordedPoints = [];
+      lastTrailPoint = null;
+      trailSkipCount = 0;
       if (trailCtx && trailCanvas) {
         trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
       }
@@ -1370,9 +1382,38 @@
             posInfo.textContent = `Active Tracking: ${axesDetected.join(" + ")}`;
 
             // If recording or testing a gesture, save full (X, Y) pair to trail
+            // but only if the point is not a sensor spike (distance check).
             if ((data.recording_state === "recording" || data.inference_active) && measuredX !== null && measuredY !== null) {
-              recordedPoints.push({ x: measuredX, y: measuredY });
-              drawTrail();
+              let acceptPoint = true;
+
+              if (lastTrailPoint !== null) {
+                const dx = measuredX - lastTrailPoint.x;
+                const dy = measuredY - lastTrailPoint.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist >= MAX_TRAIL_JUMP_CM) {
+                  trailSkipCount++;
+                  if (trailSkipCount >= MAX_TRAIL_SKIP_RESET) {
+                    // The REFERENCE was the spike — wipe trail and restart from here
+                    console.debug(`[trail] reference was spike — reset after ${trailSkipCount} skips`);
+                    recordedPoints = [];
+                    if (trailCtx && trailCanvas) trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                    lastTrailPoint = { x: measuredX, y: measuredY };
+                    trailSkipCount = 0;
+                    recordedPoints.push({ x: measuredX, y: measuredY });
+                    drawTrail();
+                  } else {
+                    console.debug(`[trail] spike scartato: salto di ${dist.toFixed(1)} cm (skip ${trailSkipCount}/${MAX_TRAIL_SKIP_RESET})`);
+                  }
+                  acceptPoint = false;
+                }
+              }
+
+              if (acceptPoint) {
+                trailSkipCount = 0;
+                lastTrailPoint = { x: measuredX, y: measuredY };
+                recordedPoints.push({ x: measuredX, y: measuredY });
+                drawTrail();
+              }
             }
           } else {
             handCursor.style.opacity = "0";

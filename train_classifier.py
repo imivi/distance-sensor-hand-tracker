@@ -30,6 +30,59 @@ MODEL_DIR = Path("models")
 MODEL_PATH = MODEL_DIR / "gesture_rf.joblib"
 
 
+# Maximum distance (cm) allowed between two consecutive gesture points.
+# Jumps >= this value are sensor spikes and are discarded before feature extraction.
+MAX_RECORD_JUMP_CM = 10.0
+# If this many consecutive points are rejected, the reference itself was the spike.
+MAX_RECORD_SKIP_RESET = 5
+
+
+def filter_outlier_points(
+    points: list[tuple[float, float]],
+    max_jump: float = MAX_RECORD_JUMP_CM,
+    max_skip_reset: int = MAX_RECORD_SKIP_RESET,
+) -> list[tuple[float, float]]:
+    """
+    Removes sensor spike points from a recorded gesture trajectory.
+
+    A point is discarded if its Euclidean distance from the previous accepted
+    point is >= max_jump cm.  If max_skip_reset consecutive points are rejected,
+    the reference was likely the spike — discard accepted points so far and
+    restart from the current point.
+
+    Args:
+        points:          List of (x_cm, y_cm) coordinates in recording order.
+        max_jump:        Maximum allowed distance between consecutive points (cm).
+        max_skip_reset:  After this many consecutive rejections, reset the reference.
+
+    Returns:
+        Cleaned list of (x, y) points with spikes removed.
+    """
+    if not points:
+        return []
+
+    accepted: list[tuple[float, float]] = [points[0]]
+    last_x, last_y = points[0]
+    skip_streak = 0
+
+    for x, y in points[1:]:
+        dist = ((x - last_x) ** 2 + (y - last_y) ** 2) ** 0.5
+        if dist >= max_jump:
+            skip_streak += 1
+            if skip_streak >= max_skip_reset:
+                # Reference was the spike — wipe and restart from here
+                accepted.clear()
+                accepted.append((x, y))
+                last_x, last_y = x, y
+                skip_streak = 0
+            continue  # discard this point (or already reset above)
+        skip_streak = 0
+        accepted.append((x, y))
+        last_x, last_y = x, y
+
+    return accepted
+
+
 def load_dataset():
     """
     Parses recordings/gestures.csv and extracts fixed-size feature vectors.
@@ -49,7 +102,7 @@ def load_dataset():
 
     # Store letter target per recording ID and collect sequence of (x, y) coordinates
     rec_letters = {}
-    rec_points = defaultdict(list)
+    rec_points = defaultdict(list)  # list of (x, y)
 
     with open(CSV_PATH, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -61,17 +114,23 @@ def load_dataset():
                 y = float(row["y_cm"])
                 rec_letters[rid] = letter
                 rec_points[rid].append((x, y))
-            except ValueError, KeyError, TypeError:
+            except (ValueError, KeyError, TypeError):
                 continue
 
     X_list = []
     y_list = []
     rids_list = []
     skipped = 0
+    total_raw = 0
+    total_kept = 0
 
     # Extract 39 features for each gesture recording
     for rid, pts in rec_points.items():
-        feat = extract_features(pts)
+        total_raw += len(pts)
+        # Apply distance-based outlier filter before feature extraction
+        clean_pts = filter_outlier_points(pts)
+        total_kept += len(clean_pts)
+        feat = extract_features(clean_pts)
         if feat is not None:
             X_list.append(feat)
             y_list.append(rec_letters[rid])
@@ -80,10 +139,17 @@ def load_dataset():
             # Skip noise or accidental clicks with fewer than 4 valid points
             skipped += 1
 
+    discarded = total_raw - total_kept
     print(
+        f"Loaded {len(X_list)} valid gesture samples ({skipped} skipped due to < 4 points).\n"
+        f"Outlier filter: removed {discarded}/{total_raw} spike points "
+        f"({discarded / total_raw * 100:.1f}% of dataset)."
+        if total_raw > 0 else
         f"Loaded {len(X_list)} valid gesture samples ({skipped} skipped due to < 4 points)."
     )
     return np.array(X_list, dtype=np.float32), np.array(y_list), rids_list
+
+
 
 
 def train_and_save():

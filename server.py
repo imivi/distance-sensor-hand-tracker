@@ -82,6 +82,15 @@ serial_task = None
 MAX_STEP_JUMP_CM = 10.0
 MAX_OUTLIER_STREAK = 3
 
+# Distance-based outlier filter for gesture recording.
+# If consecutive points are more than this many cm apart it is a sensor spike;
+# the point is discarded and never saved to CSV.
+MAX_RECORD_JUMP_CM = 10.0
+# If this many points IN A ROW are rejected, it means the reference point itself
+# was the spike (e.g. first reading at startup). Reset the reference to the current
+# incoming point so recording can continue normally.
+MAX_RECORD_SKIP_RESET = 5
+
 
 class SensorFilter:
     def __init__(self, max_dist: float, window_size: int = WINDOW_SIZE):
@@ -141,6 +150,16 @@ class GestureRecorder:
         self.last_x: float | None = None
         self.last_y: float | None = None
         self.current_recording_id: str | None = None
+        # Distance-based spike filter: stores last accepted (x, y) to compare against
+        self._filter_last_x: float | None = None
+        self._filter_last_y: float | None = None
+        self._filter_skip: int = 0  # consecutive rejection counter
+
+    def _reset_filter(self):
+        """Resets the distance-based outlier filter state."""
+        self._filter_last_x = None
+        self._filter_last_y = None
+        self._filter_skip = 0
 
     def start(self, letter: str):
         self.target_letter = letter.upper()
@@ -150,6 +169,7 @@ class GestureRecorder:
         self.last_x = None
         self.last_y = None
         self.current_recording_id = str(uuid.uuid4())[:8]  # Unique 8-character ID
+        self._reset_filter()
         logger.info(
             "Recording requested for letter '%s' (ID: %s, waiting for hand)",
             self.target_letter,
@@ -173,6 +193,7 @@ class GestureRecorder:
         self.last_x = None
         self.last_y = None
         self.current_recording_id = None
+        self._reset_filter()
 
         if saved_filename:
             logger.info(
@@ -211,6 +232,7 @@ class GestureRecorder:
         self.last_x = None
         self.last_y = None
         self.current_recording_id = None
+        self._reset_filter()
 
         logger.info(
             "Recording cancelled by user for letter '%s' (discarded %d samples)",
@@ -227,7 +249,9 @@ class GestureRecorder:
         self, target_x: float | None, target_y: float | None
     ) -> dict | None:
         """Processes current hand position and logs points while recording.
-        Only saves full pairs of (X, Y) coordinates; skips if any axis is inactive."""
+        Only saves full pairs of (X, Y) coordinates; skips if any axis is inactive.
+        Discards any point that is >= MAX_RECORD_JUMP_CM away from the previous one
+        (sensor spike) — the point is never saved to CSV."""
         if self.state == "idle":
             return None
 
@@ -237,6 +261,8 @@ class GestureRecorder:
             if has_full_pair:
                 self.state = "recording"
                 self.start_time = asyncio.get_event_loop().time()
+                self._filter_last_x = target_x
+                self._filter_last_y = target_y
                 self.samples.append(
                     {
                         "timestamp": 0.0,
@@ -257,9 +283,47 @@ class GestureRecorder:
             return None
 
         if self.state == "recording":
-            # Only save full pairs of (X, Y) values
             if has_full_pair:
+                # Distance check: discard point if it jumps too far from last accepted
+                if self._filter_last_x is not None:
+                    dx = target_x - self._filter_last_x
+                    dy = target_y - self._filter_last_y
+                    dist = (dx ** 2 + dy ** 2) ** 0.5
+                    if dist >= MAX_RECORD_JUMP_CM:
+                        self._filter_skip += 1
+                        if self._filter_skip >= MAX_RECORD_SKIP_RESET:
+                            # Too many rejections in a row: the REFERENCE was the spike.
+                            # Reset reference to current point and remove the bad first sample.
+                            logger.info(
+                                "Reference was a spike for letter '%s' — resetting after %d skips",
+                                self.target_letter, self._filter_skip,
+                            )
+                            self._filter_last_x = target_x
+                            self._filter_last_y = target_y
+                            self._filter_skip = 0
+                            # Remove the initial spike sample(s) that were saved before we realised
+                            self.samples.clear()
+                            self.start_time = asyncio.get_event_loop().time()
+                            self.samples.append(
+                                {
+                                    "timestamp": 0.0,
+                                    "x": round(target_x, 2),
+                                    "y": round(target_y, 2),
+                                }
+                            )
+                        else:
+                            logger.debug(
+                                "Spike discarded for letter '%s': jump %.1f cm (skip %d/%d)",
+                                self.target_letter, dist,
+                                self._filter_skip, MAX_RECORD_SKIP_RESET,
+                            )
+                        return None
+
+                # Accept point
+                self._filter_skip = 0
                 t_rel = asyncio.get_event_loop().time() - self.start_time
+                self._filter_last_x = target_x
+                self._filter_last_y = target_y
                 self.samples.append(
                     {
                         "timestamp": round(t_rel, 3),
@@ -268,6 +332,8 @@ class GestureRecorder:
                     }
                 )
             return None
+
+
 
     def _save_csv(self) -> str:
         file_exists = CSV_FILE_PATH.exists()
