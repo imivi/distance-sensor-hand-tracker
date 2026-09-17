@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 150" width="100%" height="100%">
+  <rect width="680" height="150" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+  <!-- Arduino box -->
+  <rect x="25" y="45" width="130" height="60" rx="8" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5" />
+  <text x="90" y="78" fill="#0369a1" font-family="sans-serif" font-weight="bold" font-size="14"
+    text-anchor="middle">Arduino Nano</text>
+  <text x="90" y="94" fill="#0284c7" font-family="sans-serif" font-size="11" text-anchor="middle">4x HC-SR04</text>
+  <!-- Arrow 1 -->
+  <line x1="160" y1="75" x2="195" y2="75" stroke="#0284c7" stroke-width="2.5" />
+  <polygon points="195,70 203,75 195,80" fill="#0284c7" />
+  <!-- Processing box -->
+  <rect x="208" y="45" width="135" height="60" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5" />
+  <text x="275" y="78" fill="#1e293b" font-family="sans-serif" font-weight="bold" font-size="14"
+    text-anchor="middle">Triangolazione</text>
+  <text x="275" y="94" fill="#475569" font-family="sans-serif" font-size="11" text-anchor="middle">Coordinate 2D</text>
+  <!-- Arrow 2 -->
+  <line x1="348" y1="75" x2="383" y2="75" stroke="#0284c7" stroke-width="2.5" />
+  <polygon points="383,70 391,75 383,80" fill="#0284c7" />
+  <!-- AI box -->
+  <rect x="396" y="45" width="135" height="60" rx="8" fill="#dcfce7" stroke="#10b981" stroke-width="1.5" />
+  <text x="463" y="78" fill="#166534" font-family="sans-serif" font-weight="bold" font-size="14"
+    text-anchor="middle">Random Forest</text>
+  <text x="463" y="94" fill="#15803d" font-family="sans-serif" font-size="11" text-anchor="middle">Classificatore
+    39D</text>
+  <!-- Arrow 3 -->
+  <line x1="536" y1="75" x2="571" y2="75" stroke="#0284c7" stroke-width="2.5" />
+  <polygon points="571,70 579,75 571,80" fill="#0284c7" />
+  <!-- UI box -->
+  <rect x="584" y="45" width="80" height="60" rx="8" fill="#f3e8ff" stroke="#9333ea" stroke-width="1.5" />
+  <text x="624" y="78" fill="#6b21a8" font-family="sans-serif" font-weight="bold" font-size="14"
+    text-anchor="middle">Web App</text>
+  <text x="624" y="94" fill="#7e22ce" font-family="sans-serif" font-size="11" text-anchor="middle">Live Radar</text>
+</svg>

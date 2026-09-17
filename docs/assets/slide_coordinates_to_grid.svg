@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 290" width="100%" height="100%">
+  <rect width="400" height="290" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- Panel 1: Continuous Coordinates -->
+  <g transform="translate(15, 18)">
+    <rect width="165" height="152" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+    <text x="82" y="22" fill="#0369a1" font-family="sans-serif" font-weight="bold" font-size="11"
+      text-anchor="middle">1. Punti Spaziali (X, Y)</text>
+
+    <!-- Coordinate box with drawn 'C' points -->
+    <rect x="18" y="32" width="130" height="100" rx="4" fill="#ffffff" stroke="#e2e8f0" />
+
+    <!-- trajectory line and discrete dots -->
+    <path d="M 125 50 C 50 35 45 110 125 115" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,3" />
+    <circle cx="125" cy="50" r="4" fill="#dc2626" />
+    <circle cx="85" cy="45" r="3.5" fill="#dc2626" />
+    <circle cx="55" cy="65" r="3.5" fill="#dc2626" />
+    <circle cx="50" cy="85" r="3.5" fill="#dc2626" />
+    <circle cx="65" cy="105" r="3.5" fill="#dc2626" />
+    <circle cx="95" cy="115" r="3.5" fill="#dc2626" />
+    <circle cx="125" cy="115" r="4" fill="#dc2626" />
+
+    <!-- Bounding box -->
+    <rect x="42" y="38" width="90" height="84" fill="none" stroke="#0284c7" stroke-width="1.2" stroke-dasharray="2,2" />
+    <text x="82" y="144" fill="#64748b" font-family="sans-serif" font-size="9" text-anchor="middle">Bounding Box [min,
+      max]</text>
+  </g>
+
+  <!-- Arrow -->
+  <g transform="translate(185, 82)">
+    <line x1="0" y1="10" x2="23" y2="10" stroke="#0284c7" stroke-width="2.5" />
+    <polygon points="23,6 31,10 23,14" fill="#0284c7" />
+    <text x="15" y="25" fill="#0369a1" font-family="sans-serif" font-weight="bold" font-size="8"
+      text-anchor="middle">Raster</text>
+  </g>
+
+  <!-- Panel 2: 6x6 Occupancy Grid -->
+  <g transform="translate(220, 18)">
+    <rect width="165" height="152" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+    <text x="82" y="22" fill="#15803d" font-family="sans-serif" font-weight="bold" font-size="11"
+      text-anchor="middle">2. Griglia 6×6 (Binaria)</text>
+
+    <!-- 6x6 grid cells (18x18 each) -->
+    <g transform="translate(28, 32)">
+      <!-- Row 0 -->
+      <rect x="0" y="0" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="18" y="0" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="36" y="0" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="54" y="0" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="72" y="0" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="90" y="0" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <!-- Row 1 -->
+      <rect x="0" y="18" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="18" y="18" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="36" y="18" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="54" y="18" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="72" y="18" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="90" y="18" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <!-- Row 2 -->
+      <rect x="0" y="36" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="18" y="36" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="36" y="36" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="54" y="36" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="72" y="36" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="90" y="36" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <!-- Row 3 -->
+      <rect x="0" y="54" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="18" y="54" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="36" y="54" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="54" y="54" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="72" y="54" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="90" y="54" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <!-- Row 4 -->
+      <rect x="0" y="72" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="18" y="72" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="36" y="72" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="54" y="72" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="72" y="72" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="90" y="72" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <!-- Row 5 -->
+      <rect x="0" y="90" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+      <rect x="18" y="90" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="36" y="90" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="54" y="90" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="72" y="90" width="18" height="18" fill="#fee2e2" stroke="#f87171" />
+      <rect x="90" y="90" width="18" height="18" fill="#ffffff" stroke="#cbd5e1" />
+    </g>
+    <text x="82" y="144" fill="#166534" font-family="sans-serif" font-weight="600" font-size="9" text-anchor="middle">36
+      Celle: 1 (Tratto) / 0 (Vuoto)</text>
+  </g>
+
+  <!-- Panel 3: Flattened Feature Vector -->
+  <g transform="translate(15, 182)">
+    <rect width="370" height="92" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+    <text x="185" y="20" fill="#0f172a" font-family="sans-serif" font-weight="bold" font-size="11"
+      text-anchor="middle">3. Vettore Unificato per il Classificatore (39 Dimensioni)</text>
+
+    <!-- Vector bar representation -->
+    <g transform="translate(15, 30)">
+      <!-- 36 Grid values -->
+      <rect x="0" y="0" width="240" height="26" rx="4" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
+      <text x="120" y="17" fill="#0369a1" font-family="monospace" font-size="10" font-weight="bold"
+        text-anchor="middle">[0, 1, 1, 1, ..., 0, 1, 1, 0]</text>
+      <text x="120" y="40" fill="#64748b" font-family="sans-serif" font-size="9" text-anchor="middle">36 Valori Griglia
+        (Occupanza Spaziale)</text>
+
+      <!-- Plus sign -->
+      <text x="250" y="18" fill="#0f172a" font-family="sans-serif" font-weight="bold" font-size="14"
+        text-anchor="middle">+</text>
+
+      <!-- 3 Shape metrics -->
+      <rect x="260" y="0" width="80" height="26" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.2" />
+      <text x="300" y="17" fill="#b45309" font-family="monospace" font-size="10" font-weight="bold"
+        text-anchor="middle">[R, W, H]</text>
+      <text x="300" y="40" fill="#64748b" font-family="sans-serif" font-size="9" text-anchor="middle">3 Metriche
+        Forma</text>
+    </g>
+  </g>
+</svg>

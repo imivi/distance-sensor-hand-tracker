@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 290" width="100%" height="100%">
+  <rect width="360" height="290" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- Step 1: Physical Input -->
+  <rect x="20" y="20" width="320" height="65" rx="8" fill="#f8fafc" stroke="#0284c7" stroke-width="1.2" />
+  <text x="35" y="44" fill="#0369a1" font-family="sans-serif" font-weight="bold" font-size="13">1. Acquisizione
+    Traiettoria Spaziale</text>
+  <text x="35" y="63" fill="#475569" font-family="sans-serif" font-size="11">Sequenza discreta nel tempo: [(x0, y0),
+    ..., (xN, yN)]</text>
+  <text x="35" y="78" fill="#64748b" font-family="sans-serif" font-size="10">Calcolata via triangolazione geometrica
+    diretta</text>
+
+  <!-- Arrow 1 -->
+  <line x1="180" y1="85" x2="180" y2="105" stroke="#0284c7" stroke-width="2" />
+
+  <!-- Step 2: Feature Extraction -->
+  <rect x="20" y="105" width="320" height="65" rx="8" fill="#f8fafc" stroke="#d97706" stroke-width="1.2" />
+  <text x="35" y="129" fill="#b45309" font-family="sans-serif" font-weight="bold" font-size="13">2. Feature Extraction
+    (Vettore 39D)</text>
+  <text x="35" y="148" fill="#475569" font-family="sans-serif" font-size="11">Normalizzazione bounding box + Griglia
+    6x6</text>
+  <text x="35" y="163" fill="#64748b" font-family="sans-serif" font-size="10">Rende il dato invariante da ordine e verso
+    di scrittura</text>
+
+  <!-- Arrow 2 -->
+  <line x1="180" y1="170" x2="180" y2="190" stroke="#059669" stroke-width="2" />
+
+  <!-- Step 3: Classification Output -->
+  <rect x="20" y="190" width="320" height="80" rx="8" fill="#dcfce7" stroke="#10b981" stroke-width="1.2" />
+  <text x="35" y="214" fill="#166534" font-family="sans-serif" font-weight="bold" font-size="13">3. Classificazione
+    Multiclasse (ML)</text>
+  <text x="35" y="235" fill="#0f172a" font-family="sans-serif" font-weight="bold" font-size="12">17 Classi discrete di
+    lettere: {A, C, D, ..., Z}</text>
+  <text x="35" y="253" fill="#15803d" font-family="sans-serif" font-size="11">Output: Classe predetta + Distribuzione di
+    probabilità</text>
+</svg>

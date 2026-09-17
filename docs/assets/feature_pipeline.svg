@@ -1,182 +1,234 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 340" width="100%" height="100%">
   <defs>
     <style>
-      .bg { fill: #0b1120; }
-      .card { fill: #1e293b; stroke: #334155; stroke-width: 1.5; rx: 10; }
-      .header-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; font-weight: 700; fill: #f8fafc; }
-      .sub-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; fill: #94a3b8; }
-      .code-text { font-family: monospace; font-size: 10px; fill: #38bdf8; }
-      .arrow { stroke: #64748b; stroke-width: 2; fill: none; marker-end: url(#pipeline-arrow); }
-      .grid-cell { stroke: #334155; stroke-width: 1; }
-      .cell-off { fill: #0f172a; }
-      .cell-on { fill: #ef4444; }
-      .stroke-point { fill: #ef4444; stroke: #ffffff; stroke-width: 1.5; }
-      .feat-box { fill: #0f172a; stroke: #0284c7; stroke-width: 1.2; rx: 4; }
-      .feat-txt { font-family: monospace; font-size: 9px; fill: #38bdf8; text-anchor: middle; }
-      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 15px; font-weight: 700; fill: #f8fafc; }
+      .bg {
+        fill: #ffffff;
+        stroke: #e2e8f0;
+        stroke-width: 1.5;
+      }
+
+      .card {
+        fill: #f8fafc;
+        stroke: #cbd5e1;
+        stroke-width: 1.5;
+        rx: 10;
+      }
+
+      .header-text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        fill: #0f172a;
+      }
+
+      .sub-text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 10px;
+        fill: #475569;
+      }
+
+      .code-text {
+        font-family: monospace;
+        font-size: 10px;
+        fill: #0284c7;
+        font-weight: bold;
+      }
+
+      .arrow {
+        stroke: #0284c7;
+        stroke-width: 2;
+        fill: none;
+      }
+
+      .grid-cell {
+        stroke: #cbd5e1;
+        stroke-width: 1;
+      }
+
+      .cell-off {
+        fill: #ffffff;
+      }
+
+      .cell-on {
+        fill: #fee2e2;
+        stroke: #f87171;
+      }
+
+      .stroke-point {
+        fill: #dc2626;
+        stroke: #ffffff;
+        stroke-width: 1.5;
+      }
+
+      .feat-box {
+        fill: #ffffff;
+        stroke: #0284c7;
+        stroke-width: 1.2;
+        rx: 4;
+      }
+
+      .feat-txt {
+        font-family: monospace;
+        font-size: 9px;
+        fill: #0369a1;
+        text-anchor: middle;
+        font-weight: bold;
+      }
+
+      .title {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        fill: #0f172a;
+      }
     </style>
-    <marker id="pipeline-arrow" viewBox="0 0 6 6" refX="4" refY="3" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M 0 0 L 6 3 L 0 6 z" fill="#64748b"/>
-    </marker>
   </defs>
 
-  <rect width="880" height="340" rx="14" class="bg"/>
+  <rect width="880" height="340" rx="14" class="bg" />
 
   <!-- Title -->
-  <text x="30" y="36" class="title">Gesture Feature Extraction Pipeline (Raw Stroke → 39D Feature Vector)</text>
+  <text x="30" y="36" class="title">Pipeline di Estrazione Feature (Traiettoria Grezza → Vettore 39D)</text>
 
   <!-- Step 1: Raw Trajectory -->
   <g transform="translate(30, 65)">
-    <rect width="180" height="245" class="card"/>
-    <text x="18" y="28" class="header-text">1. Raw Gesture Points</text>
-    <text x="18" y="45" class="sub-text">Captured at ~15 Hz in cm</text>
+    <rect width="180" height="245" class="card" />
+    <text x="18" y="28" class="header-text">1. Punti Acquisiti (X, Y)</text>
+    <text x="18" y="45" class="sub-text">Campionati a ~15-18 Hz in cm</text>
 
     <!-- Mini stroke canvas drawing letter 'C' -->
-    <rect x="25" y="60" width="130" height="130" rx="6" fill="#0f172a" stroke="#334155"/>
-    <path d="M 130 85 C 60 70 50 160 130 165" fill="none" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="130" cy="85" r="4" class="stroke-point"/>
-    <circle cx="95" cy="80" r="3" fill="#ef4444"/>
-    <circle cx="68" cy="95" r="3" fill="#ef4444"/>
-    <circle cx="58" cy="125" r="3" fill="#ef4444"/>
-    <circle cx="70" cy="155" r="3" fill="#ef4444"/>
-    <circle cx="100" cy="165" r="3" fill="#ef4444"/>
-    <circle cx="130" cy="165" r="4" class="stroke-point"/>
+    <rect x="25" y="60" width="130" height="130" rx="6" fill="#ffffff" stroke="#cbd5e1" />
+    <path d="M 130 85 C 60 70 50 160 130 165" fill="none" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round" />
+    <circle cx="130" cy="85" r="4" class="stroke-point" />
+    <circle cx="95" cy="80" r="3" fill="#dc2626" />
+    <circle cx="68" cy="95" r="3" fill="#dc2626" />
+    <circle cx="58" cy="125" r="3" fill="#dc2626" />
+    <circle cx="70" cy="155" r="3" fill="#dc2626" />
+    <circle cx="100" cy="165" r="3" fill="#dc2626" />
+    <circle cx="130" cy="165" r="4" class="stroke-point" />
 
     <!-- Bounding Box outline -->
-    <rect x="52" y="74" width="85" height="97" fill="none" stroke="#38bdf8" stroke-dasharray="3,3" stroke-width="1.2"/>
-    <text x="90" y="210" font-family="monospace" font-size="10" fill="#94a3b8" text-anchor="middle">Bounding Box (W, H)</text>
-    <text x="90" y="226" class="code-text" text-anchor="middle">N = 28 points</text>
+    <rect x="52" y="74" width="85" height="97" fill="none" stroke="#0284c7" stroke-dasharray="3,3" stroke-width="1.2" />
+    <text x="90" y="210" font-family="sans-serif" font-size="10" fill="#475569" text-anchor="middle">Bounding Box (W,
+      H)</text>
+    <text x="90" y="226" class="code-text" text-anchor="middle">N = 28 coordinate</text>
   </g>
 
   <!-- Connector Arrow 1 -->
-  <line x1="210" y1="185" x2="245" y2="185" class="arrow"/>
+  <g transform="translate(210, 180)">
+    <line x1="0" y1="5" x2="32" y2="5" class="arrow" />
+    <polygon points="32,0 40,5 32,10" fill="#0284c7" />
+  </g>
 
   <!-- Step 2: 6x6 Occupancy Grid -->
-  <g transform="translate(250, 65)">
-    <rect width="210" height="245" class="card"/>
-    <text x="18" y="28" class="header-text">2. 6×6 Occupancy Grid</text>
-    <text x="18" y="45" class="sub-text">Stroke rasterized &amp; interpolated</text>
+  <g transform="translate(255, 65)">
+    <rect width="210" height="245" class="card" />
+    <text x="18" y="28" class="header-text">2. Griglia 6×6 Rasterizzata</text>
+    <text x="18" y="45" class="sub-text">Interpolazione continua del tratto</text>
 
     <!-- 6x6 Grid of 20x20 squares -->
     <g transform="translate(45, 62)">
       <!-- Row 0: empty except top of C -->
-      <rect x="0" y="0" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="20" y="0" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="40" y="0" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="60" y="0" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="80" y="0" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="100" y="0" width="20" height="20" class="grid-cell cell-off"/>
+      <rect x="0" y="0" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="20" y="0" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="40" y="0" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="60" y="0" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="80" y="0" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="100" y="0" width="20" height="20" class="grid-cell cell-off" />
 
       <!-- Row 1: left edge -->
-      <rect x="0" y="20" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="20" y="20" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="40" y="20" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="60" y="20" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="80" y="20" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="100" y="20" width="20" height="20" class="grid-cell cell-on"/>
+      <rect x="0" y="20" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="20" y="20" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="40" y="20" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="60" y="20" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="80" y="20" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="100" y="20" width="20" height="20" class="grid-cell cell-off" />
 
       <!-- Row 2: left edge -->
-      <rect x="0" y="40" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="20" y="40" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="40" y="40" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="60" y="40" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="80" y="40" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="100" y="40" width="20" height="20" class="grid-cell cell-off"/>
+      <rect x="0" y="40" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="20" y="40" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="40" y="40" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="60" y="40" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="80" y="40" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="100" y="40" width="20" height="20" class="grid-cell cell-off" />
 
       <!-- Row 3: left edge -->
-      <rect x="0" y="60" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="20" y="60" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="40" y="60" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="60" y="60" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="80" y="60" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="100" y="60" width="20" height="20" class="grid-cell cell-off"/>
+      <rect x="0" y="60" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="20" y="60" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="40" y="60" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="60" y="60" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="80" y="20" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="100" y="20" width="20" height="20" class="grid-cell cell-off" />
 
       <!-- Row 4: bottom curve -->
-      <rect x="0" y="80" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="20" y="80" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="40" y="80" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="60" y="80" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="80" y="80" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="100" y="80" width="20" height="20" class="grid-cell cell-on"/>
+      <rect x="0" y="80" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="20" y="80" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="40" y="80" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="60" y="80" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="80" y="80" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="100" y="80" width="20" height="20" class="grid-cell cell-off" />
 
-      <!-- Row 5: bottom bar -->
-      <rect x="0" y="100" width="20" height="20" class="grid-cell cell-off"/>
-      <rect x="20" y="100" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="40" y="100" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="60" y="100" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="80" y="100" width="20" height="20" class="grid-cell cell-on"/>
-      <rect x="100" y="100" width="20" height="20" class="grid-cell cell-off"/>
+      <!-- Row 5: bottom-right -->
+      <rect x="0" y="100" width="20" height="20" class="grid-cell cell-off" />
+      <rect x="20" y="100" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="40" y="100" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="60" y="100" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="80" y="100" width="20" height="20" class="grid-cell cell-on" />
+      <rect x="100" y="100" width="20" height="20" class="grid-cell cell-off" />
     </g>
 
-    <text x="105" y="210" font-family="monospace" font-size="10" fill="#94a3b8" text-anchor="middle">36 Binary Features (0 or 1)</text>
-    <text x="105" y="226" class="code-text" text-anchor="middle">Direction-Independent</text>
+    <text x="105" y="212" class="code-text" text-anchor="middle">36 Features Booleane (0/1)</text>
+    <text x="105" y="228" font-family="sans-serif" font-size="9" fill="#166534" font-weight="bold"
+      text-anchor="middle">Invariante al Verso di Scrittura</text>
   </g>
 
   <!-- Connector Arrow 2 -->
-  <line x1="460" y1="185" x2="495" y2="185" class="arrow"/>
-
-  <!-- Step 3: Feature Concatenation -->
-  <g transform="translate(500, 65)">
-    <rect width="170" height="245" class="card"/>
-    <text x="16" y="28" class="header-text">3. 39D Feature Vector</text>
-    <text x="16" y="45" class="sub-text">Raster + geometry shape</text>
-
-    <!-- Stack of features -->
-    <g transform="translate(18, 62)">
-      <!-- Grid block -->
-      <rect x="0" y="0" width="134" height="42" class="feat-box"/>
-      <text x="67" y="18" class="feat-txt">Grid Occupancy [0..35]</text>
-      <text x="67" y="32" font-family="-apple-system, sans-serif" font-size="9" fill="#94a3b8" text-anchor="middle">36 binary cells</text>
-
-      <text x="67" y="55" font-family="monospace" font-size="12" fill="#64748b" text-anchor="middle">+</text>
-
-      <!-- Aspect Ratio -->
-      <rect x="0" y="62" width="134" height="24" class="feat-box" stroke="#10b981"/>
-      <text x="67" y="78" class="feat-txt" fill="#10b981">Aspect Ratio (H / W)</text>
-
-      <!-- Width -->
-      <rect x="0" y="92" width="134" height="24" class="feat-box" stroke="#f59e0b"/>
-      <text x="67" y="108" class="feat-txt" fill="#f59e0b">BBox Width (cm)</text>
-
-      <!-- Height -->
-      <rect x="0" y="122" width="134" height="24" class="feat-box" stroke="#f59e0b"/>
-      <text x="67" y="138" class="feat-txt" fill="#f59e0b">BBox Height (cm)</text>
-    </g>
-
-    <text x="85" y="226" class="code-text" text-anchor="middle">Total Length = 39</text>
+  <g transform="translate(470, 180)">
+    <line x1="0" y1="5" x2="32" y2="5" class="arrow" />
+    <polygon points="32,0 40,5 32,10" fill="#0284c7" />
   </g>
 
-  <!-- Connector Arrow 3 -->
-  <line x1="670" y1="185" x2="705" y2="185" class="arrow"/>
+  <!-- Step 3: 39D Feature Vector -->
+  <g transform="translate(515, 65)">
+    <rect width="335" height="245" class="card" />
+    <text x="18" y="28" class="header-text">3. Vettore Unificato (39D)</text>
+    <text x="18" y="45" class="sub-text">Input finale per il modello Random Forest</text>
 
-  <!-- Step 4: Random Forest Classifier -->
-  <g transform="translate(710, 65)">
-    <rect width="140" height="245" class="card" stroke="#10b981"/>
-    <text x="14" y="28" class="header-text" fill="#10b981">4. Random Forest</text>
-    <text x="14" y="45" class="sub-text">100 Trees Classifier</text>
+    <!-- Vector visual -->
+    <g transform="translate(20, 65)">
+      <!-- 36 Grid features block -->
+      <rect x="0" y="0" width="195" height="34" rx="4" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
+      <text x="97" y="18" class="feat-txt">grid[0..35] : 36 binary</text>
+      <text x="97" y="29" font-family="sans-serif" font-size="8" fill="#475569" text-anchor="middle">Forma
+        Normalizzata</text>
 
-    <!-- Mini Decision Tree graphics -->
-    <g transform="translate(25, 68)">
-      <circle cx="45" cy="10" r="7" fill="#10b981"/>
-      <line x1="45" y1="17" x2="25" y2="35" stroke="#10b981" stroke-width="1.5"/>
-      <line x1="45" y1="17" x2="65" y2="35" stroke="#10b981" stroke-width="1.5"/>
-      <circle cx="25" cy="38" r="6" fill="#0284c7"/>
-      <circle cx="65" cy="38" r="6" fill="#0284c7"/>
-      <line x1="25" y1="44" x2="12" y2="60" stroke="#0284c7" stroke-width="1.2"/>
-      <line x1="25" y1="44" x2="38" y2="60" stroke="#0284c7" stroke-width="1.2"/>
-      <line x1="65" y1="44" x2="52" y2="60" stroke="#0284c7" stroke-width="1.2"/>
-      <line x1="65" y1="44" x2="78" y2="60" stroke="#0284c7" stroke-width="1.2"/>
-      <circle cx="12" cy="62" r="4" fill="#64748b"/>
-      <circle cx="38" cy="62" r="4" fill="#64748b"/>
-      <circle cx="52" cy="62" r="4" fill="#64748b"/>
-      <circle cx="78" cy="62" r="4" fill="#64748b"/>
+      <!-- Plus sign -->
+      <text x="206" y="22" font-family="sans-serif" font-size="14" font-weight="700" fill="#0f172a">+</text>
+
+      <!-- 3 Global shape features block -->
+      <rect x="220" y="0" width="75" height="34" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.2" />
+      <text x="257" y="18" font-family="monospace" font-size="9" fill="#b45309" font-weight="bold"
+        text-anchor="middle">3 metrics</text>
+      <text x="257" y="29" font-family="sans-serif" font-size="8" fill="#475569" text-anchor="middle">H/W, W, H</text>
     </g>
 
-    <rect x="20" y="150" width="100" height="52" rx="6" fill="#0f172a" stroke="#334155"/>
-    <text x="70" y="172" font-family="-apple-system, sans-serif" font-size="20" font-weight="900" fill="#10b981" text-anchor="middle">'C'</text>
-    <text x="70" y="190" font-family="monospace" font-size="10" fill="#94a3b8" text-anchor="middle">Conf: 94%</text>
+    <!-- Metrics details table -->
+    <g transform="translate(20, 115)">
+      <rect x="0" y="0" width="295" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1" />
+      <text x="12" y="22" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0369a1">•
+        aspect_ratio</text>
+      <text x="110" y="22" font-family="sans-serif" font-size="10" fill="#475569">= Altezza / Larghezza</text>
 
-    <text x="70" y="226" class="code-text" text-anchor="middle">Instant (1 ms)</text>
+      <text x="12" y="44" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0369a1">•
+        bbox_width_cm</text>
+      <text x="110" y="44" font-family="sans-serif" font-size="10" fill="#475569">= Larghezza reale (cm)</text>
+
+      <text x="12" y="66" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0369a1">•
+        bbox_height_cm</text>
+      <text x="110" y="66" font-family="sans-serif" font-size="10" fill="#475569">= Altezza reale (cm)</text>
+
+      <line x1="12" y1="80" x2="283" y2="80" stroke="#e2e8f0" stroke-width="1" />
+      <text x="147" y="98" font-family="sans-serif" font-size="10" font-weight="bold" fill="#15803d"
+        text-anchor="middle">Dimensione Totale: 39 Features</text>
+    </g>
   </g>
 </svg>
-

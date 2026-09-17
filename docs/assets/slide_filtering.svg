@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 290" width="100%" height="100%">
+  <rect width="350" height="290" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
+  <text x="175" y="30" font-family="sans-serif" font-weight="bold" font-size="13" fill="#0f172a"
+    text-anchor="middle">Filtraggio del Segnale e Spike Rejection</text>
+
+  <!-- Noisy Signal -->
+  <polyline points="30,85 60,82 90,40 120,83 150,86 180,84 210,87 240,30 270,88 310,86" fill="none" stroke="#ef4444"
+    stroke-width="2" stroke-dasharray="4,3" />
+  <circle cx="90" cy="40" r="4" fill="#ef4444" />
+  <circle cx="240" cy="30" r="4" fill="#ef4444" />
+  <text x="235" y="48" font-family="sans-serif" font-size="10" fill="#ef4444">Spike scartati</text>
+
+  <!-- Filtered Signal -->
+  <polyline points="30,85 60,84 90,83 120,84 150,85 180,85 210,86 240,87 270,87 310,86" fill="none" stroke="#10b981"
+    stroke-width="3" />
+  <text x="100" y="108" font-family="sans-serif" font-weight="bold" font-size="11" fill="#059669">Traiettoria reale
+    filtrata (Mediana)</text>
+
+  <!-- Arrow -->
+  <line x1="175" y1="125" x2="175" y2="155" stroke="#64748b" stroke-width="2" />
+
+  <!-- Dataset Block -->
+  <rect x="35" y="165" width="280" height="95" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="50" y="193" font-family="sans-serif" font-weight="bold" font-size="13" fill="#0369a1">Dataset Gestures (191
+    campioni)</text>
+  <text x="50" y="215" font-family="sans-serif" font-size="11" fill="#475569">• 17 Lettere dell'alfabeto</text>
+  <text x="50" y="233" font-family="sans-serif" font-size="11" fill="#475569">• Frequenza effettiva ~15-18 Hz</text>
+  <text x="50" y="250" font-family="sans-serif" font-size="11" fill="#475569">• Tracciamento tempo, coordinate e
+    ID</text>
+</svg>
