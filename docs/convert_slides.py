@@ -149,7 +149,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       min-height: 0;
     }}
 
-    .grid-2 > div:first-child {{
+    .grid-video {{
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 28px;
+      align-items: center;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }}
+
+    .grid-2 > div:first-child,
+    .grid-video > div:first-child {{
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -175,13 +186,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       max-height: 520px;
     }}
 
-    .svg-card img {{
+    .svg-card img,
+    .svg-card video {{
       max-width: 100%;
       max-height: 460px;
       width: auto;
       height: auto;
       border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       object-fit: contain;
     }}
 
@@ -222,6 +234,30 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       border-radius: 9999px;
       margin-top: 14px;
       letter-spacing: 0.02em;
+    }}
+
+    .github-link {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #0284c7;
+      text-decoration: none;
+      font-family: monospace;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-top: 12px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 6px 16px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }}
+
+    .github-link:hover {{
+      color: #0369a1;
+      border-color: #0284c7;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.15);
     }}
 
     /* Page number watermark on slide */

@@ -134,7 +134,18 @@
       min-height: 0;
     }
 
-    .grid-2 > div:first-child {
+    .grid-video {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 28px;
+      align-items: center;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-2 > div:first-child,
+    .grid-video > div:first-child {
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -160,13 +171,14 @@
       max-height: 520px;
     }
 
-    .svg-card img {
+    .svg-card img,
+    .svg-card video {
       max-width: 100%;
       max-height: 460px;
       width: auto;
       height: auto;
       border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       object-fit: contain;
     }
 
@@ -209,6 +221,30 @@
       letter-spacing: 0.02em;
     }
 
+    .github-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #0284c7;
+      text-decoration: none;
+      font-family: monospace;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-top: 12px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 6px 16px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .github-link:hover {
+      color: #0369a1;
+      border-color: #0284c7;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.15);
+    }
+
     /* Page number watermark on slide */
     .slide-footer-page {
       position: absolute;
@@ -231,29 +267,49 @@
         <img src="assets/slide_hero.svg" width="700" style="border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.08);"/>
         </div>
         <span class="hero-tag">Progetto di Gruppo — Interazione Uomo-Macchina / Sistemi Embedded</span>
+        <a class="github-link" href="https://github.com/imivi/distance-sensor-hand-tracker" target="_blank">github.com/imivi/distance-sensor-hand-tracker</a>
     </div>
 
     <!-- Slide 2 -->
     <div class="slide" data-slide="2">
       <h2>Dimostrazione del Sistema</h2>
-        <div class="grid-2">
+        <div class="grid-video">
         <div>
           <h3>Il Sistema in Azione</h3>
           <ul>
-            <li><strong>Tracciamento dal Vivo:</strong> Disegno di lettere a mezz'aria all'interno della cornice acustica</li>
-            <li><strong>Classificazione Istantanea:</strong> Riconoscimento della lettera e stima di confidenza al termine del tratto</li>
-            <li><strong>Registrazione & Training Live:</strong> Cattura di nuovi gesti in tempo reale usati direttamente per allenare e aggiornare il modello di Machine Learning</li>
-            <li><strong>Zero Dispositivi Indossabili:</strong> Libertà totale di movimento senza telecamere né guanti</li>
+            <li><strong>Tracciamento dal Vivo:</strong> Disegno di lettere a mezz'aria nella cornice</li>
+            <li><strong>Classificazione Istantanea:</strong> Riconoscimento della lettera e confidenza al rilascio</li>
+            <li><strong>Registrazione & Training Live:</strong> Nuovi gesti registrati e riaddestrati in tempo reale</li>
+            <li><strong>Zero Dispositivi Indossabili:</strong> Senza telecamere né guanti</li>
           </ul>
         </div>
         <div class="svg-card">
-        <img src="assets/slide_video_demo.svg" width="380"/>
+        <video src="assets/video.mp4" controls loop width="560"></video>
         </div>
         </div>
     </div>
 
     <!-- Slide 3 -->
     <div class="slide" data-slide="3">
+      <h2>Interfaccia Web di Monitoraggio & Controllo</h2>
+        <div class="grid-video">
+        <div>
+          <h3>Funzionalità dell'Applicazione</h3>
+          <ul>
+            <li><strong>Radar 2D:</strong> Tracking continuo della mano e raggi acustici</li>
+            <li><strong>Scia Dinamica:</strong> Tratto rosso fluido renderizzato su Canvas</li>
+            <li><strong>Predizione Live:</strong> Lettera stimata e barra di confidenza</li>
+            <li><strong>Gestione Completa:</strong> Registrazione gesti e retrain con un click</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/screenshot.png" width="580" style="max-height: 460px;" alt="Screenshot Interfaccia Web"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide" data-slide="4">
       <h2>Obiettivi e Motivazioni</h2>
         <div class="grid-2">
         <div>
@@ -273,8 +329,8 @@
         </div>
     </div>
 
-    <!-- Slide 4 -->
-    <div class="slide" data-slide="4">
+    <!-- Slide 5 -->
+    <div class="slide" data-slide="5">
       <h2>Formulazione del Problema: Classificazione Multiclasse</h2>
         <div class="grid-2">
         <div>
@@ -295,8 +351,8 @@
         </div>
     </div>
 
-    <!-- Slide 5 -->
-    <div class="slide" data-slide="5">
+    <!-- Slide 6 -->
+    <div class="slide" data-slide="6">
       <h2>Evoluzione Hardware: 3 Configurazioni Testate</h2>
         <div class="grid-2">
         <div>
@@ -316,8 +372,8 @@
         </div>
     </div>
 
-    <!-- Slide 6 -->
-    <div class="slide" data-slide="6">
+    <!-- Slide 7 -->
+    <div class="slide" data-slide="7">
       <h2>Firmware Arduino: Sfide Acustiche e Temporali</h2>
         <div class="grid-2">
         <div>
@@ -338,8 +394,8 @@
         </div>
     </div>
 
-    <!-- Slide 7 -->
-    <div class="slide" data-slide="7">
+    <!-- Slide 8 -->
+    <div class="slide" data-slide="8">
       <h2>Raccolta Dati & Pulizia del Segnale</h2>
         <div class="grid-2">
         <div>
@@ -362,8 +418,8 @@
         </div>
     </div>
 
-    <!-- Slide 8 -->
-    <div class="slide" data-slide="8">
+    <!-- Slide 9 -->
+    <div class="slide" data-slide="9">
       <h2>Feature Engineering: Invarianza Spaziale e Morfologica</h2>
         <div class="grid-2">
         <div>
@@ -390,8 +446,8 @@
         </div>
     </div>
 
-    <!-- Slide 9 -->
-    <div class="slide" data-slide="9">
+    <!-- Slide 10 -->
+    <div class="slide" data-slide="10">
       <h2>Modello di Machine Learning in Python</h2>
         <div class="grid-2">
         <div>
@@ -413,8 +469,8 @@
         </div>
     </div>
 
-    <!-- Slide 10 -->
-    <div class="slide" data-slide="10">
+    <!-- Slide 11 -->
+    <div class="slide" data-slide="11">
       <h2>Risultati Sperimentali & Analisi degli Errori</h2>
         <div class="grid-2">
         <div>
@@ -441,8 +497,8 @@
         </div>
     </div>
 
-    <!-- Slide 11 -->
-    <div class="slide" data-slide="11">
+    <!-- Slide 12 -->
+    <div class="slide" data-slide="12">
       <h2>Architettura Software & Interfaccia Utente</h2>
         <div class="grid-2">
         <div>
@@ -460,8 +516,8 @@
         </div>
     </div>
 
-    <!-- Slide 12 -->
-    <div class="slide" data-slide="12">
+    <!-- Slide 13 -->
+    <div class="slide" data-slide="13">
       <h2>Conclusioni & Sviluppi Futuri</h2>
         <div class="grid-2">
         <div>
@@ -483,11 +539,12 @@
         </div>
     </div>
 
-    <!-- Slide 13 -->
-    <div class="slide closing" data-slide="13">
+    <!-- Slide 14 -->
+    <div class="slide closing" data-slide="14">
       <h1>Grazie per l'Attenzione!</h1>
           <h3>2D Ultrasonic Hand Tracker & Classifier</h3>
         <span class="hero-tag">Siamo a disposizione per qualsiasi domanda o approfondimento tecnico!</span>
+        <a class="github-link" href="https://github.com/imivi/distance-sensor-hand-tracker" target="_blank" style="margin-top: 18px;">github.com/imivi/distance-sensor-hand-tracker</a>
     </div>
   </div>
 

@@ -46,6 +46,14 @@ style: |
     width: 100%;
     box-sizing: border-box;
   }
+  .grid-video {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 28px;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
   .highlight-box {
     background: #e0f2fe;
     border-left: 5px solid #0284c7;
@@ -59,10 +67,12 @@ style: |
     align-items: center;
     width: 100%;
   }
-  .svg-card img {
+  .svg-card img, .svg-card video {
     max-width: 100%;
+    max-height: 440px;
     height: auto;
     border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
   section.hero {
     display: flex;
@@ -91,8 +101,28 @@ style: |
     font-weight: 600;
     padding: 6px 18px;
     border-radius: 9999px;
-    margin-top: 14px;
+    margin-top: 10px;
     letter-spacing: 0.02em;
+  }
+  .github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #0284c7;
+    text-decoration: none;
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 10px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    padding: 5px 14px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .github-link:hover {
+    color: #0369a1;
+    border-color: #0284c7;
   }
   section.closing {
     display: flex;
@@ -126,23 +156,46 @@ style: |
 
 <span class="hero-tag">Progetto di Gruppo — Interazione Uomo-Macchina / Sistemi Embedded</span>
 
+<a class="github-link" href="https://github.com/imivi/distance-sensor-hand-tracker" target="_blank">github.com/imivi/distance-sensor-hand-tracker</a>
+
 ---
 
 ## Dimostrazione del Sistema
 
-<div class="grid-2">
+<div class="grid-video">
 <div>
 
 ### Il Sistema in Azione
-* **Tracciamento dal Vivo:** Disegno di lettere a mezz'aria all'interno della cornice acustica
-* **Classificazione Istantanea:** Riconoscimento della lettera e stima di confidenza al termine del tratto
-* **Registrazione & Training Live:** Cattura di nuovi gesti in tempo reale usati direttamente per allenare e aggiornare il modello di Machine Learning
-* **Zero Dispositivi Indossabili:** Libertà totale di movimento senza telecamere né guanti
+* **Tracciamento dal Vivo:** Disegno di lettere a mezz'aria nella cornice
+* **Classificazione Istantanea:** Riconoscimento della lettera e confidenza al rilascio
+* **Registrazione & Training Live:** Nuovi gesti registrati e riaddestrati in tempo reale
+* **Zero Dispositivi Indossabili:** Senza telecamere né guanti
 
 </div>
 <div class="svg-card">
 
-<img src="assets/slide_video_demo.svg" width="380"/>
+<video src="assets/video.mp4" controls loop width="560"></video>
+
+</div>
+</div>
+
+---
+
+## Interfaccia Web di Monitoraggio & Controllo
+
+<div class="grid-video">
+<div>
+
+### Funzionalità dell'Applicazione
+* **Radar 2D:** Tracking continuo della mano e raggi acustici
+* **Scia Dinamica:** Tratto rosso fluido renderizzato su Canvas
+* **Predizione Live:** Lettera stimata e barra di confidenza
+* **Gestione Completa:** Registrazione gesti e retrain con un click
+
+</div>
+<div class="svg-card">
+
+<img src="assets/screenshot.png" width="580" style="max-height: 460px;" alt="Screenshot Interfaccia Web"/>
 
 </div>
 </div>
@@ -397,3 +450,5 @@ style: |
 ### 2D Ultrasonic Hand Tracker & Classifier
 
 <span class="hero-tag">Siamo a disposizione per qualsiasi domanda o approfondimento tecnico!</span>
+
+<a class="github-link" href="https://github.com/imivi/distance-sensor-hand-tracker" target="_blank" style="margin-top: 18px;">github.com/imivi/distance-sensor-hand-tracker</a>
