@@ -25,6 +25,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,9 +47,6 @@ jobs:
           cp docs/presentazione.html _site/index.html
           cp docs/presentazione.html _site/presentazione.html
           cp -r docs/assets _site/assets
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
