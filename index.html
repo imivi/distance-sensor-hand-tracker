@@ -741,11 +741,13 @@
   <!-- Letter Recording Section -->
   <div class="record-toolbar">
     <div class="record-buttons" id="letterButtons">
+      <button class="btn-letter" data-letter="A">A</button>
       <button class="btn-letter" data-letter="C">C</button>
       <button class="btn-letter" data-letter="D">D</button>
       <button class="btn-letter" data-letter="G">G</button>
       <button class="btn-letter" data-letter="I">I</button>
       <button class="btn-letter" data-letter="J">J</button>
+      <button class="btn-letter" data-letter="K">K</button>
       <button class="btn-letter" data-letter="L">L</button>
       <button class="btn-letter" data-letter="M">M</button>
       <button class="btn-letter" data-letter="N">N</button>
@@ -913,11 +915,11 @@
     // If two consecutive accepted points are >= this distance apart (cm) the new
     // point is a sensor spike: discard it completely — don't draw, don't record.
     const MAX_TRAIL_JUMP_CM = 10;
-    // If this many points IN A ROW are rejected, the reference itself was the spike.
-    // Reset reference to the current point and wipe the bad trail.
-    const MAX_TRAIL_SKIP_RESET = 5;
+    // Timeout (seconds) before resetting the reference if only 1 point exists
+    // (meaning the initial point was a spike).
+    const TRAIL_RESET_TIMEOUT_SEC = 7.0;
     let lastTrailPoint = null;   // { x, y } — last accepted trail point
-    let trailSkipCount = 0;      // consecutive rejection counter
+    let trailStartTime = null;
 
     function syncTrailCanvasSize() {
       if (!trailCanvas || !arena) return;
@@ -934,7 +936,7 @@
     function clearTrail() {
       recordedPoints = [];
       lastTrailPoint = null;
-      trailSkipCount = 0;
+      trailStartTime = null;
       if (trailCtx && trailCanvas) {
         trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
       }
@@ -1384,32 +1386,39 @@
             // If recording or testing a gesture, save full (X, Y) pair to trail
             // but only if the point is not a sensor spike (distance check).
             if ((data.recording_state === "recording" || data.inference_active) && measuredX !== null && measuredY !== null) {
+              // 1. If starting a new trail, ignore rogue points on the extreme boundaries
+              if (recordedPoints.length === 0) {
+                if (measuredX > (TOTAL_WIDTH - 5.0) || measuredX < 5.0 || measuredY > (TOTAL_HEIGHT - 5.0) || measuredY < 5.0) {
+                  // Ignore initial edge entry readings until hand is in the drawing area
+                  return;
+                }
+              }
+
               let acceptPoint = true;
 
               if (lastTrailPoint !== null) {
                 const dx = measuredX - lastTrailPoint.x;
                 const dy = measuredY - lastTrailPoint.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
+
                 if (dist >= MAX_TRAIL_JUMP_CM) {
-                  trailSkipCount++;
-                  if (trailSkipCount >= MAX_TRAIL_SKIP_RESET) {
-                    // The REFERENCE was the spike — wipe trail and restart from here
-                    console.debug(`[trail] reference was spike — reset after ${trailSkipCount} skips`);
-                    recordedPoints = [];
-                    if (trailCtx && trailCanvas) trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                  // KEY FIX: If we only have 1 point so far and next point jumps towards the drawing area,
+                  // the first point was a rogue entry spike! Wipe it immediately and restart from here.
+                  if (recordedPoints.length <= 1) {
+                    console.debug(`[trail] Primo punto era uno spike di bordo: sostituito subito con (${measuredX.toFixed(1)}, ${measuredY.toFixed(1)})`);
+                    clearTrail();
                     lastTrailPoint = { x: measuredX, y: measuredY };
-                    trailSkipCount = 0;
-                    recordedPoints.push({ x: measuredX, y: measuredY });
+                    recordedPoints = [{ x: measuredX, y: measuredY }];
                     drawTrail();
+                    return;
                   } else {
-                    console.debug(`[trail] spike scartato: salto di ${dist.toFixed(1)} cm (skip ${trailSkipCount}/${MAX_TRAIL_SKIP_RESET})`);
+                    console.debug(`[trail] spike scartato: salto di ${dist.toFixed(1)} cm`);
                   }
                   acceptPoint = false;
                 }
               }
 
               if (acceptPoint) {
-                trailSkipCount = 0;
                 lastTrailPoint = { x: measuredX, y: measuredY };
                 recordedPoints.push({ x: measuredX, y: measuredY });
                 drawTrail();

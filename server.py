@@ -91,6 +91,10 @@ MAX_RECORD_JUMP_CM = 10.0
 # incoming point so recording can continue normally.
 MAX_RECORD_SKIP_RESET = 5
 
+# Timeout between points during recording (seconds).
+# If the hand is lost or paused for longer than this, the recording stops automatically.
+MAX_INACTIVITY_TIMEOUT_SEC = 7.0
+
 
 class SensorFilter:
     def __init__(self, max_dist: float, window_size: int = WINDOW_SIZE):
@@ -154,12 +158,14 @@ class GestureRecorder:
         self._filter_last_x: float | None = None
         self._filter_last_y: float | None = None
         self._filter_skip: int = 0  # consecutive rejection counter
+        self._hand_candidate: tuple[float, float] | None = None  # stabilization buffer
 
     def _reset_filter(self):
         """Resets the distance-based outlier filter state."""
         self._filter_last_x = None
         self._filter_last_y = None
         self._filter_skip = 0
+        self._hand_candidate = None
 
     def start(self, letter: str):
         self.target_letter = letter.upper()
@@ -259,10 +265,36 @@ class GestureRecorder:
 
         if self.state == "waiting_for_hand":
             if has_full_pair:
+                # 1. Edge rejection: ignore edge readings when waiting for hand (e.g. hand entering from right)
+                if (
+                    target_x > (TOTAL_WIDTH_CM - 6.0)
+                    or target_x < 5.0
+                    or target_y > (TOTAL_HEIGHT_CM - 5.0)
+                    or target_y < 5.0
+                ):
+                    self._hand_candidate = None
+                    return None
+
+                # 2. Stabilization check: require 2 consecutive close frames before starting recording
+                if self._hand_candidate is None:
+                    self._hand_candidate = (target_x, target_y)
+                    return None
+
+                cand_dx = target_x - self._hand_candidate[0]
+                cand_dy = target_y - self._hand_candidate[1]
+                cand_dist = (cand_dx ** 2 + cand_dy ** 2) ** 0.5
+
+                if cand_dist > 6.0:
+                    # Hand was still moving in fast or erratic; update candidate and wait for stabilization
+                    self._hand_candidate = (target_x, target_y)
+                    return None
+
+                # Hand is stable and in the active drawing zone! Start recording
                 self.state = "recording"
                 self.start_time = asyncio.get_event_loop().time()
                 self._filter_last_x = target_x
                 self._filter_last_y = target_y
+                self._hand_candidate = None
                 self.samples.append(
                     {
                         "timestamp": 0.0,
@@ -271,7 +303,9 @@ class GestureRecorder:
                     }
                 )
                 logger.info(
-                    "Hand detected with full XY pair! Recording started for letter '%s' (ID: %s)",
+                    "Hand stabilized at (%.1f, %.1f)! Recording started for letter '%s' (ID: %s)",
+                    target_x,
+                    target_y,
                     self.target_letter,
                     self.current_recording_id,
                 )
@@ -280,6 +314,8 @@ class GestureRecorder:
                     "letter": self.target_letter,
                     "recording_id": self.current_recording_id,
                 }
+            else:
+                self._hand_candidate = None
             return None
 
         if self.state == "recording":
@@ -290,33 +326,34 @@ class GestureRecorder:
                     dy = target_y - self._filter_last_y
                     dist = (dx ** 2 + dy ** 2) ** 0.5
                     if dist >= MAX_RECORD_JUMP_CM:
-                        self._filter_skip += 1
-                        if self._filter_skip >= MAX_RECORD_SKIP_RESET:
-                            # Too many rejections in a row: the REFERENCE was the spike.
-                            # Reset reference to current point and remove the bad first sample.
+                        # KEY FIX: If only 1 sample exists so far and next point jumps,
+                        # the first point was an entry spike! Replace it IMMEDIATELY.
+                        if len(self.samples) <= 1:
                             logger.info(
-                                "Reference was a spike for letter '%s' — resetting after %d skips",
-                                self.target_letter, self._filter_skip,
+                                "First point (%.1f, %.1f) was an entry spike for letter '%s' — replacing immediately with (%.1f, %.1f)",
+                                self._filter_last_x,
+                                self._filter_last_y,
+                                self.target_letter,
+                                target_x,
+                                target_y,
                             )
                             self._filter_last_x = target_x
                             self._filter_last_y = target_y
-                            self._filter_skip = 0
-                            # Remove the initial spike sample(s) that were saved before we realised
-                            self.samples.clear()
                             self.start_time = asyncio.get_event_loop().time()
-                            self.samples.append(
+                            self.samples = [
                                 {
                                     "timestamp": 0.0,
                                     "x": round(target_x, 2),
                                     "y": round(target_y, 2),
                                 }
-                            )
-                        else:
-                            logger.debug(
-                                "Spike discarded for letter '%s': jump %.1f cm (skip %d/%d)",
-                                self.target_letter, dist,
-                                self._filter_skip, MAX_RECORD_SKIP_RESET,
-                            )
+                            ]
+                            return None
+
+                        logger.debug(
+                            "Spike discarded for letter '%s': jump %.1f cm",
+                            self.target_letter,
+                            dist,
+                        )
                         return None
 
                 # Accept point
@@ -405,7 +442,23 @@ class GestureClassifier:
 
     def add_point(self, x: float | None, y: float | None):
         if self.is_active and x is not None and y is not None:
-            self.points.append((round(x, 2), round(y, 2)))
+            rx, ry = round(x, 2), round(y, 2)
+            # Ignore initial rogue edge points
+            if len(self.points) == 0:
+                if rx > (TOTAL_WIDTH_CM - 6.0) or rx < 5.0 or ry > (TOTAL_HEIGHT_CM - 5.0) or ry < 5.0:
+                    return
+                self.points.append((rx, ry))
+                return
+
+            # If only 1 point exists and next point jumps >= 10cm, replace the first point
+            if len(self.points) == 1:
+                dx = rx - self.points[0][0]
+                dy = ry - self.points[0][1]
+                if (dx ** 2 + dy ** 2) ** 0.5 >= MAX_RECORD_JUMP_CM:
+                    self.points = [(rx, ry)]
+                    return
+
+            self.points.append((rx, ry))
 
     def classify(self) -> dict | None:
         """Classifies accumulated gesture points and returns top predictions."""
