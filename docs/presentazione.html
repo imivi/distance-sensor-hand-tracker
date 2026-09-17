@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2D Ultrasonic Hand Tracker & Classifier - Presentazione</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --slide-bg: #f8fafc;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #0369a1;
+      --primary-light: #0284c7;
+      --border: #e2e8f0;
+      --accent: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--slide-bg);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      width: 100vw;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: var(--text);
+    }
+
+    /* 16:10 Slide Aspect Ratio Container - Clean Full Window */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      box-shadow: none;
+      border: none;
+      border-radius: 0;
+      overflow: hidden;
+      background: var(--slide-bg);
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 36px 64px;
+      background: var(--slide-bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      visibility: hidden;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.4s;
+      z-index: 1;
+    }
+
+    .slide.active {
+      visibility: visible;
+      transform: translateX(0);
+      z-index: 2;
+    }
+
+    .slide.prev {
+      visibility: hidden;
+      transform: translateX(-100%);
+      z-index: 0;
+    }
+
+    /* Headings */
+    h1 {
+      color: var(--primary);
+      font-size: 34px;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    h2 {
+      color: var(--primary-light);
+      font-size: 25px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    h3 {
+      color: #1e293b;
+      font-size: 18px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    p {
+      color: var(--text-muted);
+      line-height: 1.45;
+      font-size: 16px;
+    }
+
+    ul {
+      margin-top: 4px;
+      margin-bottom: 10px;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 7px;
+      line-height: 1.35;
+      font-size: 16.5px;
+      color: #1e293b;
+    }
+
+    /* 2-Column Responsive Layout */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 32px;
+      align-items: center;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-2 > div:first-child {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .highlight-box {
+      background: #e0f2fe;
+      border-left: 5px solid var(--primary-light);
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-size: 15.5px;
+      color: #0369a1;
+      line-height: 1.4;
+    }
+
+    .svg-card {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      max-height: 520px;
+    }
+
+    .svg-card img {
+      max-width: 100%;
+      max-height: 460px;
+      width: auto;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      object-fit: contain;
+    }
+
+    /* Hero / Centered Slide Types */
+    .slide.hero,
+    .slide.closing {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 36px 64px;
+    }
+
+    .slide.hero h1 {
+      font-size: 40px;
+      margin-bottom: 8px;
+    }
+
+    .slide.hero h3,
+    .slide.closing h3 {
+      font-size: 20px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .slide.closing h1 {
+      font-size: 40px;
+      margin-bottom: 8px;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 7px 20px;
+      border-radius: 9999px;
+      margin-top: 14px;
+      letter-spacing: 0.02em;
+    }
+
+    /* Page number watermark on slide */
+    .slide-footer-page {
+      position: absolute;
+      bottom: 20px;
+      right: 30px;
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Slide Deck Presentation -->
+  <div class="deck-container" id="deck">
+    <!-- Slide 1 -->
+    <div class="slide hero active" data-slide="1">
+      <h1>Riconoscimento lettere in 2D con sensori di distanza</h1>
+        <div style="display: flex; justify-content: center; width: 100%; margin: 6px 0;">
+        <img src="assets/slide_hero.svg" width="700" style="border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.08);"/>
+        </div>
+        <span class="hero-tag">Progetto di Gruppo — Interazione Uomo-Macchina / Sistemi Embedded</span>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide" data-slide="2">
+      <h2>Dimostrazione del Sistema</h2>
+        <div class="grid-2">
+        <div>
+          <h3>Il Sistema in Azione</h3>
+          <ul>
+            <li><strong>Tracciamento dal Vivo:</strong> Disegno di lettere a mezz'aria all'interno della cornice acustica</li>
+            <li><strong>Classificazione Istantanea:</strong> Riconoscimento della lettera e stima di confidenza al termine del tratto</li>
+            <li><strong>Registrazione & Training Live:</strong> Cattura di nuovi gesti in tempo reale usati direttamente per allenare e aggiornare il modello di Machine Learning</li>
+            <li><strong>Zero Dispositivi Indossabili:</strong> Libertà totale di movimento senza telecamere né guanti</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_video_demo.svg" width="380"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide" data-slide="3">
+      <h2>Obiettivi e Motivazioni</h2>
+        <div class="grid-2">
+        <div>
+          <h3>Perché gli ultrasuoni?</h3>
+          <ul>
+            <li><strong>Privacy-First:</strong> Nessuna telecamera né acquisizione ottica negli ambienti</li>
+            <li><strong>Zero Dispositivi Indossabili:</strong> Nessun guanto o anello smart</li>
+            <li><strong>Economicità Estrema:</strong> Pochi euro di componenti hardware contro costosi sistemi ottici</li>
+          </ul>
+        <div class="highlight-box">
+        <b>Traguardo:</b> Riconoscere 17 lettere disegnate a mezz'aria in una cornice 49×51 cm con accuratezza &gt;90%.
+        </div>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_motivations.svg" width="370"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide" data-slide="4">
+      <h2>Formulazione del Problema: Classificazione Multiclasse</h2>
+        <div class="grid-2">
+        <div>
+          <h3>Natura del Task: Riconoscimento di Pattern</h3>
+          <ul>
+            <li>Il sistema risolve un problema di <strong>classificazione multiclasse supervisionata</strong>: mappare una sequenza gestuale continua in una categoria simbolica discreta.</li>
+          </ul>
+          <h3>Input e Output del Modello</h3>
+          <ul>
+            <li><strong>Input Grezzo:</strong> Serie temporale di coordinate (X, Y) rilevate durante il movimento della mano</li>
+            <li><strong>Input al Modello:</strong> Vettore di feature numeriche a 39 dimensioni estratto al termine del gesto</li>
+            <li><strong>Output:</strong> Etichetta discreta della classe (tra 17 lettere dell'alfabeto) con la relativa distribuzione di confidenza</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_coordinates_to_grid.svg" width="390"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide" data-slide="5">
+      <h2>Evoluzione Hardware: 3 Configurazioni Testate</h2>
+        <div class="grid-2">
+        <div>
+          <h3>Il Percorso Sperimentale</h3>
+          <ul>
+            <li><strong>1. Quattro Sensori in Parallelo:</strong></li>
+            <li>Disposti sulla stessa linea: misuravano solo la profondità 1D con forti interferenze acustiche tra loro.</li>
+            <li><strong>2. Due Sensori Perpendicolari (X, Y):</strong></li>
+            <li>Disposizione ad "L": mappava il piano, ma <strong>l'altezza della mano (Z) falsava le coordinate (X, Y)</strong>.</li>
+            <li><strong>3. Quattro Sensori Opposti (2 per asse) — Scelta Finale:</strong></li>
+            <li>Cornice chiusa 49 &times; 51 cm: confrontando i sensori opposti, <strong>l'altezza si annulla matematicamente</strong> per triangolazione pitagorica!</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_sensor_configurations.svg" width="380"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 6 -->
+    <div class="slide" data-slide="6">
+      <h2>Firmware Arduino: Sfide Acustiche e Temporali</h2>
+        <div class="grid-2">
+        <div>
+          <h3>1. Interferenza Acustica (Crosstalk)</h3>
+          <ul>
+            <li><strong>Il problema:</strong> Se i 4 sensori sparano insieme, l'eco di uno viene captato per sbaglio da un altro (misure false).</li>
+            <li><strong>La soluzione:</strong> <strong>Interrogazione sequenziale</strong> (S1 &rarr; S2 &rarr; S3 &rarr; S4) con pausa di <strong>18 ms</strong> tra i pings per far decadere i rimbalzi.</li>
+          </ul>
+          <h3>2. Gestione dei Timeout</h3>
+          <ul>
+            <li><strong>Il problema:</strong> Di default, se un'onda non torna indietro Arduino si blocca in attesa fino a 1 secondo!</li>
+            <li><strong>La soluzione:</strong> <strong>Timeout ridotto a 8 ms</strong> (~137 cm max). Se l'eco non torna, scarta il dato e continua subito senza bloccare lo streaming (~18-20 Hz).</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_firmware.svg" width="375"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 7 -->
+    <div class="slide" data-slide="7">
+      <h2>Raccolta Dati & Pulizia del Segnale</h2>
+        <div class="grid-2">
+        <div>
+          <h3>Filtri sul Flusso Seriale</h3>
+          <ul>
+            <li><strong>Filtro Mediana Mobile:</strong> Finestra a 5 campioni per attenuare il jitter continuo</li>
+            <li><strong>Reiezione Salti:</strong> Scarta variazioni brusche anomale nel singolo frame</li>
+            <li><strong>Recupero Dinamico:</strong> Riconosce i cambi di traiettoria intenzionali e rapidi</li>
+          </ul>
+          <h3>Raccolta del Dataset</h3>
+          <ul>
+            <li>Acquisizione interattiva tramite interfaccia web</li>
+            <li><strong>191 registrazioni complessive</strong> su 17 lettere</li>
+            <li>Campioni acquisiti da diversi utenti a varie velocità</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_filtering.svg" width="350"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 8 -->
+    <div class="slide" data-slide="8">
+      <h2>Feature Engineering: Invarianza Spaziale e Morfologica</h2>
+        <div class="grid-2">
+        <div>
+          <h3>I 3 Passaggi Chiave:</h3>
+          <p>1. <strong>Normalizzazione & Centratura:</strong></p>
+          <ul>
+            <li>Scalatura uniforme basata sul lato maggiore</li>
+            <li>La lettera mantiene le sue proporzioni originali</li>
+          </ul>
+          <p>2. <strong>Griglia di Occupanza 6 &times; 6 (36 celle):</strong></p>
+          <ul>
+            <li>Matrice binaria delle celle attraversate</li>
+            <li><strong>Interpolazione lineare</strong> tra punti: nessun buco</li>
+            <li>Completa invarianza da senso orario o antiorario!</li>
+          </ul>
+          <p>3. <strong>Metriche Globali (3 valori):</strong></p>
+          <ul>
+            <li>Rapporto di forma, larghezza e altezza in centimetri</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/feature_pipeline.svg" width="460" style="max-height: 380px;"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 9 -->
+    <div class="slide" data-slide="9">
+      <h2>Modello di Machine Learning in Python</h2>
+        <div class="grid-2">
+        <div>
+          <h3>Scelta del Modello: Random Forest</h3>
+          <ul>
+            <li><strong>Dataset Compatto:</strong> Evita il rischio di memorizzazione tipico delle reti neurali profonde</li>
+            <li><strong>Robustezza alle Feature Miste:</strong> Gestisce assieme flag binari di griglia e metriche geometriche</li>
+            <li><strong>Inferenza Istantanea:</strong> Previsione in meno di un millisecondo</li>
+            <li><strong>Aggiornamento a Caldo:</strong> Riaddestramento live senza interruzione del server</li>
+          </ul>
+          <h3>Protocollo di Validazione</h3>
+          <ul>
+            <li><strong>Stratified 5-Fold Cross-Validation:</strong> Tutte le classi bilanciate tra training e test</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_rf.svg" width="340"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 10 -->
+    <div class="slide" data-slide="10">
+      <h2>Risultati Sperimentali & Analisi degli Errori</h2>
+        <div class="grid-2">
+        <div>
+          <h3>Metriche Globali</h3>
+          <ul>
+            <li><strong>Accuratezza Totale:</strong> <strong>91.1%</strong></li>
+            <li><strong>Precision Macro:</strong> <strong>91.3%</strong></li>
+            <li><strong>Recall Macro:</strong> <strong>90.9%</strong></li>
+          </ul>
+          <h3>Lettere con Prestazioni Massime</h3>
+          <ul>
+            <li><strong>P, G (100%):</strong> Tratti chiusi inconfondibili</li>
+            <li><strong>I, S, A (>95%):</strong> Spiccata unicità morfologica</li>
+          </ul>
+          <h3>Ambiguità Rilevate</h3>
+          <ul>
+            <li><strong>D vs J:</strong> Parte superiore aperta nei tratti veloci</li>
+            <li><strong>M vs N:</strong> Risoluzione griglia sul picco centrale</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_metrics.svg" width="340"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 11 -->
+    <div class="slide" data-slide="11">
+      <h2>Architettura Software & Interfaccia Utente</h2>
+        <div class="grid-2">
+        <div>
+          <h3>Web App Reattiva Full-Stack</h3>
+          <ul>
+            <li><strong>Radar 2D Interattivo:</strong> Traccia la posizione della mano in tempo reale con visualizzazione dei raggi</li>
+            <li><strong>Scia Rossa Dinamica:</strong> Rendering fluido del tratto disegnato a mezz'aria</li>
+            <li><strong>Classificazione Live:</strong> Mostra le 4 predizioni più probabili con percentuali di confidenza</li>
+            <li><strong>Retrain con Un Click:</strong> Aggiorna il modello direttamente dal browser</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_ui.svg" width="350"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 12 -->
+    <div class="slide" data-slide="12">
+      <h2>Conclusioni & Sviluppi Futuri</h2>
+        <div class="grid-2">
+        <div>
+          <h3>Risultati Ottenuti</h3>
+          <ul>
+            <li>Interazione touchless affidabile senza dispositivi ottici</li>
+            <li>Invarianza geometrica grazie alla griglia di occupanza con interpolazione</li>
+            <li>Sistema integrato reattivo a bassissima latenza</li>
+          </ul>
+          <h3>Limiti Fisici</h3>
+          <ul>
+            <li>Frequenza vincolata dalla velocità del suono in aria</li>
+            <li>Sensibilità all'inclinazione del palmo</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_future.svg" width="340"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 13 -->
+    <div class="slide closing" data-slide="13">
+      <h1>Grazie per l'Attenzione!</h1>
+          <h3>2D Ultrasonic Hand Tracker & Classifier</h3>
+        <span class="hero-tag">Siamo a disposizione per qualsiasi domanda o approfondimento tecnico!</span>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      let currentIndex = 0;
+
+      // Add page numbering to content slides
+      slides.forEach((slide, idx) => {
+        if (!slide.classList.contains('hero') && !slide.classList.contains('closing')) {
+          const footerPage = document.createElement('div');
+          footerPage.className = 'slide-footer-page';
+          footerPage.textContent = `${idx + 1} / ${slides.length}`;
+          slide.appendChild(footerPage);
+        }
+      });
+
+      function updateSlide(newIndex, direction = 1) {
+        if (newIndex < 0 || newIndex >= slides.length || newIndex === currentIndex) return;
+
+        const currentSlide = slides[currentIndex];
+        const nextSlideEl = slides[newIndex];
+
+        // Prepare incoming slide position without animation if needed
+        if (direction < 0) {
+          nextSlideEl.style.transition = 'none';
+          nextSlideEl.classList.remove('active');
+          nextSlideEl.classList.add('prev');
+          void nextSlideEl.offsetWidth;
+          nextSlideEl.style.transition = '';
+        } else {
+          nextSlideEl.style.transition = 'none';
+          nextSlideEl.classList.remove('active', 'prev');
+          void nextSlideEl.offsetWidth;
+          nextSlideEl.style.transition = '';
+        }
+
+        // Move current slide out
+        if (direction > 0) {
+          currentSlide.classList.remove('active');
+          currentSlide.classList.add('prev');
+        } else {
+          currentSlide.classList.remove('active', 'prev');
+        }
+
+        // Animate target slide in
+        nextSlideEl.classList.remove('prev');
+        nextSlideEl.classList.add('active');
+
+        currentIndex = newIndex;
+        window.location.hash = `#slide-${currentIndex + 1}`;
+      }
+
+      function nextSlide() {
+        if (currentIndex < slides.length - 1) {
+          updateSlide(currentIndex + 1, 1);
+        }
+      }
+
+      function prevSlide() {
+        if (currentIndex > 0) {
+          updateSlide(currentIndex - 1, -1);
+        }
+      }
+
+      // Keyboard navigation
+      window.addEventListener('keydown', (e) => {
+        switch (e.key) {
+          case 'ArrowRight':
+          case 'ArrowDown':
+          case ' ':
+          case 'PageDown':
+            e.preventDefault();
+            nextSlide();
+            break;
+          case 'ArrowLeft':
+          case 'ArrowUp':
+          case 'PageUp':
+            e.preventDefault();
+            prevSlide();
+            break;
+          case 'Home':
+            e.preventDefault();
+            updateSlide(0, -1);
+            break;
+          case 'End':
+            e.preventDefault();
+            updateSlide(slides.length - 1, 1);
+            break;
+        }
+      });
+
+      // Handle initial hash link
+      const hashMatch = window.location.hash.match(/#slide-(\d+)/);
+      if (hashMatch) {
+        const targetIndex = parseInt(hashMatch[1], 10) - 1;
+        if (targetIndex >= 0 && targetIndex < slides.length) {
+          updateSlide(targetIndex, 1);
+        } else {
+          updateSlide(0, 1);
+        }
+      } else {
+        updateSlide(0, 1);
+      }
+    })();
+  </script>
+</body>
+</html>

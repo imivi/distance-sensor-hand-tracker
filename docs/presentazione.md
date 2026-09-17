@@ -7,9 +7,10 @@ style: |
   section {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     font-size: 20px;
-    padding: 34px 44px;
+    padding: 36px 64px;
     background: #f8fafc;
     color: #0f172a;
+    box-sizing: border-box;
   }
   h1 {
     color: #0369a1;
@@ -26,32 +27,37 @@ style: |
   h3 {
     color: #1e293b;
     font-size: 20px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   ul {
+    margin-top: 4px;
     margin-bottom: 12px;
+    padding-left: 22px;
   }
   li {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     line-height: 1.35;
   }
   .grid-2 {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: 24px;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
     align-items: center;
+    width: 100%;
+    box-sizing: border-box;
   }
   .highlight-box {
     background: #e0f2fe;
     border-left: 5px solid #0284c7;
     padding: 10px 14px;
     border-radius: 4px;
-    margin: 10px 0;
+    margin: 12px 0;
   }
   .svg-card {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
   }
   .svg-card img {
     max-width: 100%;
@@ -64,7 +70,7 @@ style: |
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 30px 48px;
+    padding: 36px 64px;
   }
   section.hero h1 {
     font-size: 42px;
@@ -88,6 +94,25 @@ style: |
     margin-top: 14px;
     letter-spacing: 0.02em;
   }
+  section.closing {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 28px 64px;
+  }
+  section.closing h1 {
+    font-size: 40px;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+  }
+  section.closing h3 {
+    font-size: 20px;
+    color: #475569;
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
 ---
 
 <!-- _class: hero -->
@@ -110,8 +135,8 @@ style: |
 
 ### Il Sistema in Azione
 * **Tracciamento dal Vivo:** Disegno di lettere a mezz'aria all'interno della cornice acustica
-* **Visualizzazione Real-Time:** Scia rossa fluida renderizzata sul Canvas a 30 FPS
 * **Classificazione Istantanea:** Riconoscimento della lettera e stima di confidenza al termine del tratto
+* **Registrazione & Training Live:** Cattura di nuovi gesti in tempo reale usati direttamente per allenare e aggiornare il modello di Machine Learning
 * **Zero Dispositivi Indossabili:** Libertà totale di movimento senza telecamere né guanti
 
 </div>
@@ -171,25 +196,23 @@ style: |
 
 ---
 
-## Hardware & Geometria di Triangolazione
+## Evoluzione Hardware: 3 Configurazioni Testate
 
 <div class="grid-2">
 <div>
 
-### La Cornice Acustica ($49 \times 51\text{ cm}$)
-* **4 Sensori HC-SR04** posti sui punti mediani dei lati
-* Asse verticale: S1 (Alto) e S2 (Basso)
-* Asse orizzontale: S3 (Sinistra) e S4 (Destra)
-
-### Il Trucco della Triangolazione
-* La mano si muove a mezz'aria, quindi ha anche un'altezza (quota).
-* Confrontando i due sensori opposti (es. Sinistra e Destra), **l'altezza della mano si annulla nei calcoli**.
-* Otteniamo la posizione esatta 2D $(X, Y)$ anche se alziamo o abbassiamo la mano mentre disegniamo!
+### Il Percorso Sperimentale
+* **1. Quattro Sensori in Parallelo:**
+  * Disposti sulla stessa linea: misuravano solo la profondità 1D con forti interferenze acustiche tra loro.
+* **2. Due Sensori Perpendicolari (X, Y):**
+  * Disposizione ad "L": mappava il piano, ma **l'altezza della mano ($Z$) falsava le coordinate $(X, Y)$**.
+* **3. Quattro Sensori Opposti (2 per asse) — Scelta Finale:**
+  * Cornice chiusa $49 \times 51\text{ cm}$: confrontando i sensori opposti, **l'altezza si annulla matematicamente** per triangolazione pitagorica!
 
 </div>
 <div class="svg-card">
 
-<img src="assets/hardware_triangulation.svg" width="460"/>
+<img src="assets/slide_sensor_configurations.svg" width="380"/>
 
 </div>
 </div>
@@ -263,7 +286,7 @@ style: |
 </div>
 <div class="svg-card">
 
-<img src="assets/feature_pipeline.svg" width="460"/>
+<img src="assets/feature_pipeline.svg" width="460" style="max-height: 380px;"/>
 
 </div>
 </div>
@@ -357,10 +380,6 @@ style: |
 * Frequenza vincolata dalla velocità del suono in aria
 * Sensibilità all'inclinazione del palmo
 
-### Direzioni Future
-* Air-writing volumetrico 3D
-* Porting su microcontrollore (Edge / TinyML)
-
 </div>
 <div class="svg-card">
 
@@ -371,14 +390,10 @@ style: |
 
 ---
 
-<!-- _class: hero -->
+<!-- _class: closing -->
 <!-- _paginate: false -->
 
 # Grazie per l'Attenzione!
 ### 2D Ultrasonic Hand Tracker & Classifier
-
-<div style="display: flex; justify-content: center; width: 100%; margin: 12px 0;">
-  <img src="assets/slide_closing.svg" width="670" style="border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.06);"/>
-</div>
 
 <span class="hero-tag">Siamo a disposizione per qualsiasi domanda o approfondimento tecnico!</span>

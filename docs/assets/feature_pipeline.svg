@@ -1,43 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 340" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 380" width="100%" height="100%">
   <defs>
     <style>
-      .bg {
+      .panel-bg {
         fill: #ffffff;
         stroke: #e2e8f0;
         stroke-width: 1.5;
+        rx: 12;
       }
 
-      .card {
+      .box {
         fill: #f8fafc;
         stroke: #cbd5e1;
         stroke-width: 1.5;
-        rx: 10;
+        rx: 8;
       }
 
-      .header-text {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 13px;
+      .title-text {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
         font-weight: 700;
         fill: #0f172a;
       }
 
-      .sub-text {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 10px;
+      .label-text {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 11px;
         fill: #475569;
       }
 
-      .code-text {
+      .code-bold {
         font-family: monospace;
-        font-size: 10px;
-        fill: #0284c7;
+        font-size: 12px;
         font-weight: bold;
-      }
-
-      .arrow {
-        stroke: #0284c7;
-        stroke-width: 2;
-        fill: none;
+        fill: #0284c7;
       }
 
       .grid-cell {
@@ -54,181 +49,136 @@
         stroke: #f87171;
       }
 
-      .stroke-point {
-        fill: #dc2626;
-        stroke: #ffffff;
-        stroke-width: 1.5;
-      }
-
-      .feat-box {
-        fill: #ffffff;
+      .arrow-line {
         stroke: #0284c7;
-        stroke-width: 1.2;
-        rx: 4;
-      }
-
-      .feat-txt {
-        font-family: monospace;
-        font-size: 9px;
-        fill: #0369a1;
-        text-anchor: middle;
-        font-weight: bold;
-      }
-
-      .title {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 15px;
-        font-weight: 700;
-        fill: #0f172a;
+        stroke-width: 2.5;
+        fill: none;
       }
     </style>
   </defs>
 
-  <rect width="880" height="340" rx="14" class="bg" />
+  <!-- Background -->
+  <rect width="460" height="380" rx="12" class="panel-bg" />
 
-  <!-- Title -->
-  <text x="30" y="36" class="title">Pipeline di Estrazione Feature (Traiettoria Grezza → Vettore 39D)</text>
+  <!-- TOP ROW: Step 1 (Raw Stroke) & Step 2 (6x6 Grid) Side-by-Side -->
 
-  <!-- Step 1: Raw Trajectory -->
-  <g transform="translate(30, 65)">
-    <rect width="180" height="245" class="card" />
-    <text x="18" y="28" class="header-text">1. Punti Acquisiti (X, Y)</text>
-    <text x="18" y="45" class="sub-text">Campionati a ~15-18 Hz in cm</text>
+  <!-- STEP 1: Raw Coordinates -->
+  <g transform="translate(18, 16)">
+    <rect width="195" height="215" class="box" />
+    <text x="97" y="24" class="title-text" text-anchor="middle">1. Coordinate (X, Y)</text>
+    <text x="97" y="40" class="label-text" text-anchor="middle">Traiettoria nel tempo</text>
 
-    <!-- Mini stroke canvas drawing letter 'C' -->
-    <rect x="25" y="60" width="130" height="130" rx="6" fill="#ffffff" stroke="#cbd5e1" />
-    <path d="M 130 85 C 60 70 50 160 130 165" fill="none" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round" />
-    <circle cx="130" cy="85" r="4" class="stroke-point" />
-    <circle cx="95" cy="80" r="3" fill="#dc2626" />
-    <circle cx="68" cy="95" r="3" fill="#dc2626" />
-    <circle cx="58" cy="125" r="3" fill="#dc2626" />
-    <circle cx="70" cy="155" r="3" fill="#dc2626" />
-    <circle cx="100" cy="165" r="3" fill="#dc2626" />
-    <circle cx="130" cy="165" r="4" class="stroke-point" />
+    <!-- Canvas area -->
+    <rect x="25" y="52" width="145" height="120" rx="6" fill="#ffffff" stroke="#cbd5e1" />
+    <!-- Drawn stroke 'C' -->
+    <path d="M 135 75 C 65 60 55 145 135 150" fill="none" stroke="#dc2626" stroke-width="4" stroke-linecap="round" />
+    <circle cx="135" cy="75" r="4.5" fill="#dc2626" />
+    <circle cx="98" cy="70" r="3.5" fill="#dc2626" />
+    <circle cx="70" cy="85" r="3.5" fill="#dc2626" />
+    <circle cx="62" cy="112" r="3.5" fill="#dc2626" />
+    <circle cx="75" cy="140" r="3.5" fill="#dc2626" />
+    <circle cx="105" cy="150" r="3.5" fill="#dc2626" />
+    <circle cx="135" cy="150" r="4.5" fill="#dc2626" />
 
-    <!-- Bounding Box outline -->
-    <rect x="52" y="74" width="85" height="97" fill="none" stroke="#0284c7" stroke-dasharray="3,3" stroke-width="1.2" />
-    <text x="90" y="210" font-family="sans-serif" font-size="10" fill="#475569" text-anchor="middle">Bounding Box (W,
-      H)</text>
-    <text x="90" y="226" class="code-text" text-anchor="middle">N = 28 coordinate</text>
+    <!-- Bounding Box dotted -->
+    <rect x="52" y="64" width="92" height="92" fill="none" stroke="#0284c7" stroke-dasharray="3,3" stroke-width="1.5" />
+    <text x="97" y="192" font-family="sans-serif" font-size="11" font-weight="600" fill="#0369a1"
+      text-anchor="middle">Bounding Box (W, H)</text>
+    <text x="97" y="206" class="label-text" text-anchor="middle">Scalatura uniforme</text>
   </g>
 
-  <!-- Connector Arrow 1 -->
-  <g transform="translate(210, 180)">
-    <line x1="0" y1="5" x2="32" y2="5" class="arrow" />
-    <polygon points="32,0 40,5 32,10" fill="#0284c7" />
+  <!-- Arrow between Step 1 and Step 2 -->
+  <g transform="translate(216, 115)">
+    <line x1="0" y1="5" x2="22" y2="5" class="arrow-line" />
+    <polygon points="22,0 28,5 22,10" fill="#0284c7" />
   </g>
 
-  <!-- Step 2: 6x6 Occupancy Grid -->
-  <g transform="translate(255, 65)">
-    <rect width="210" height="245" class="card" />
-    <text x="18" y="28" class="header-text">2. Griglia 6×6 Rasterizzata</text>
-    <text x="18" y="45" class="sub-text">Interpolazione continua del tratto</text>
+  <!-- STEP 2: 6x6 Occupancy Grid -->
+  <g transform="translate(247, 16)">
+    <rect width="195" height="215" class="box" />
+    <text x="97" y="24" class="title-text" text-anchor="middle">2. Griglia 6×6</text>
+    <text x="97" y="40" class="label-text" text-anchor="middle">Interpolazione continua</text>
 
-    <!-- 6x6 Grid of 20x20 squares -->
-    <g transform="translate(45, 62)">
-      <!-- Row 0: empty except top of C -->
-      <rect x="0" y="0" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="20" y="0" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="40" y="0" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="60" y="0" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="80" y="0" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="100" y="0" width="20" height="20" class="grid-cell cell-off" />
-
-      <!-- Row 1: left edge -->
-      <rect x="0" y="20" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="20" y="20" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="40" y="20" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="60" y="20" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="80" y="20" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="100" y="20" width="20" height="20" class="grid-cell cell-off" />
-
-      <!-- Row 2: left edge -->
-      <rect x="0" y="40" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="20" y="40" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="40" y="40" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="60" y="40" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="80" y="40" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="100" y="40" width="20" height="20" class="grid-cell cell-off" />
-
-      <!-- Row 3: left edge -->
-      <rect x="0" y="60" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="20" y="60" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="40" y="60" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="60" y="60" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="80" y="20" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="100" y="20" width="20" height="20" class="grid-cell cell-off" />
-
-      <!-- Row 4: bottom curve -->
-      <rect x="0" y="80" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="20" y="80" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="40" y="80" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="60" y="80" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="80" y="80" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="100" y="80" width="20" height="20" class="grid-cell cell-off" />
-
-      <!-- Row 5: bottom-right -->
-      <rect x="0" y="100" width="20" height="20" class="grid-cell cell-off" />
-      <rect x="20" y="100" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="40" y="100" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="60" y="100" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="80" y="100" width="20" height="20" class="grid-cell cell-on" />
-      <rect x="100" y="100" width="20" height="20" class="grid-cell cell-off" />
+    <!-- 6x6 Raster Grid (each cell 18x18, total 108x108) -->
+    <g transform="translate(43, 58)">
+      <!-- Row 0 -->
+      <rect x="0" y="0" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="18" y="0" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="36" y="0" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="54" y="0" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="72" y="0" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="90" y="0" width="18" height="18" class="grid-cell cell-off" />
+      <!-- Row 1 -->
+      <rect x="0" y="18" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="18" y="18" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="36" y="18" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="54" y="18" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="72" y="18" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="90" y="18" width="18" height="18" class="grid-cell cell-off" />
+      <!-- Row 2 -->
+      <rect x="0" y="36" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="18" y="36" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="36" y="36" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="54" y="36" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="72" y="36" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="90" y="36" width="18" height="18" class="grid-cell cell-off" />
+      <!-- Row 3 -->
+      <rect x="0" y="54" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="18" y="54" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="36" y="54" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="54" y="54" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="72" y="54" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="90" y="54" width="18" height="18" class="grid-cell cell-off" />
+      <!-- Row 4 -->
+      <rect x="0" y="72" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="18" y="72" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="36" y="72" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="54" y="72" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="72" y="72" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="90" y="72" width="18" height="18" class="grid-cell cell-off" />
+      <!-- Row 5 -->
+      <rect x="0" y="90" width="18" height="18" class="grid-cell cell-off" />
+      <rect x="18" y="90" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="36" y="90" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="54" y="90" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="72" y="90" width="18" height="18" class="grid-cell cell-on" />
+      <rect x="90" y="90" width="18" height="18" class="grid-cell cell-off" />
     </g>
 
-    <text x="105" y="212" class="code-text" text-anchor="middle">36 Features Booleane (0/1)</text>
-    <text x="105" y="228" font-family="sans-serif" font-size="9" fill="#166534" font-weight="bold"
-      text-anchor="middle">Invariante al Verso di Scrittura</text>
+    <text x="97" y="190" font-family="sans-serif" font-size="12" font-weight="700" fill="#15803d"
+      text-anchor="middle">36 Valori Booleani</text>
+    <text x="97" y="206" font-family="sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="middle">✔
+      Invariante al verso</text>
   </g>
 
-  <!-- Connector Arrow 2 -->
-  <g transform="translate(470, 180)">
-    <line x1="0" y1="5" x2="32" y2="5" class="arrow" />
-    <polygon points="32,0 40,5 32,10" fill="#0284c7" />
-  </g>
+  <!-- BOTTOM ROW: Step 3 (Unified 39D Feature Vector) -->
+  <g transform="translate(18, 244)">
+    <rect width="424" height="120" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5" />
+    <text x="212" y="24" class="title-text" fill="#166534" text-anchor="middle">3. Vettore Finale per il Modello (39
+      Dimensioni)</text>
 
-  <!-- Step 3: 39D Feature Vector -->
-  <g transform="translate(515, 65)">
-    <rect width="335" height="245" class="card" />
-    <text x="18" y="28" class="header-text">3. Vettore Unificato (39D)</text>
-    <text x="18" y="45" class="sub-text">Input finale per il modello Random Forest</text>
-
-    <!-- Vector visual -->
-    <g transform="translate(20, 65)">
-      <!-- 36 Grid features block -->
-      <rect x="0" y="0" width="195" height="34" rx="4" fill="#ffffff" stroke="#0284c7" stroke-width="1.2" />
-      <text x="97" y="18" class="feat-txt">grid[0..35] : 36 binary</text>
-      <text x="97" y="29" font-family="sans-serif" font-size="8" fill="#475569" text-anchor="middle">Forma
-        Normalizzata</text>
+    <!-- Vector Breakdown -->
+    <g transform="translate(16, 38)">
+      <!-- 36 Grid features -->
+      <rect x="0" y="0" width="230" height="34" rx="6" fill="#ffffff" stroke="#0284c7" stroke-width="1.5" />
+      <text x="115" y="22" class="code-bold" text-anchor="middle">36 Celle Griglia [0 / 1]</text>
+      <text x="115" y="48" font-family="sans-serif" font-size="10" fill="#475569" text-anchor="middle">Occupanza
+        Spaziale</text>
 
       <!-- Plus sign -->
-      <text x="206" y="22" font-family="sans-serif" font-size="14" font-weight="700" fill="#0f172a">+</text>
+      <text x="246" y="24" font-family="sans-serif" font-size="18" font-weight="800" fill="#0f172a"
+        text-anchor="middle">+</text>
 
-      <!-- 3 Global shape features block -->
-      <rect x="220" y="0" width="75" height="34" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.2" />
-      <text x="257" y="18" font-family="monospace" font-size="9" fill="#b45309" font-weight="bold"
-        text-anchor="middle">3 metrics</text>
-      <text x="257" y="29" font-family="sans-serif" font-size="8" fill="#475569" text-anchor="middle">H/W, W, H</text>
+      <!-- 3 Global shape features -->
+      <rect x="262" y="0" width="130" height="34" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="1.5" />
+      <text x="327" y="22" font-family="monospace" font-size="12" font-weight="bold" fill="#b45309"
+        text-anchor="middle">3 Metriche</text>
+      <text x="327" y="48" font-family="sans-serif" font-size="10" fill="#475569" text-anchor="middle">Rapporto H/W,
+        Larghezza, Altezza</text>
     </g>
 
-    <!-- Metrics details table -->
-    <g transform="translate(20, 115)">
-      <rect x="0" y="0" width="295" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1" />
-      <text x="12" y="22" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0369a1">•
-        aspect_ratio</text>
-      <text x="110" y="22" font-family="sans-serif" font-size="10" fill="#475569">= Altezza / Larghezza</text>
-
-      <text x="12" y="44" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0369a1">•
-        bbox_width_cm</text>
-      <text x="110" y="44" font-family="sans-serif" font-size="10" fill="#475569">= Larghezza reale (cm)</text>
-
-      <text x="12" y="66" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0369a1">•
-        bbox_height_cm</text>
-      <text x="110" y="66" font-family="sans-serif" font-size="10" fill="#475569">= Altezza reale (cm)</text>
-
-      <line x1="12" y1="80" x2="283" y2="80" stroke="#e2e8f0" stroke-width="1" />
-      <text x="147" y="98" font-family="sans-serif" font-size="10" font-weight="bold" fill="#15803d"
-        text-anchor="middle">Dimensione Totale: 39 Features</text>
-    </g>
+    <!-- Total badge -->
+    <text x="212" y="108" font-family="sans-serif" font-size="12" font-weight="bold" fill="#15803d"
+      text-anchor="middle">Input compatto e ultra-veloce (inferenza &lt; 1 ms)</text>
   </g>
 </svg>
