@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 300" width="100%" height="100%">
+  <defs>
+    <!-- Arrowhead markers -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16a34a"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#9333ea"/>
+    </marker>
+  </defs>
+
+  <!-- Outer Card Frame -->
+  <rect width="420" height="300" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- Ground / Sensor Frame Plane baseline -->
+  <line x1="45" y1="185" x2="375" y2="185" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,4" />
+
+  <!-- Total Distance Dimension Line D -->
+  <line x1="60" y1="215" x2="360" y2="215" stroke="#475569" stroke-width="1.5" />
+  <line x1="60" y1="207" x2="60" y2="223" stroke="#475569" stroke-width="1.5" />
+  <line x1="360" y1="207" x2="360" y2="223" stroke="#475569" stroke-width="1.5" />
+  <text x="210" y="230" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#334155">D (49 / 51 cm)</text>
+
+  <!-- Sensor 1 (Start) -->
+  <g transform="translate(42, 170)">
+    <rect width="36" height="30" rx="5" fill="#f1f5f9" stroke="#0284c7" stroke-width="2" />
+    <circle cx="12" cy="15" r="5" fill="#0284c7" />
+    <circle cx="24" cy="15" r="5" fill="#0284c7" />
+    <text x="18" y="-6" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#0284c7">S1</text>
+  </g>
+
+  <!-- Sensor 2 (End / Opposing) -->
+  <g transform="translate(342, 170)">
+    <rect width="36" height="30" rx="5" fill="#f1f5f9" stroke="#0284c7" stroke-width="2" />
+    <circle cx="12" cy="15" r="5" fill="#0284c7" />
+    <circle cx="24" cy="15" r="5" fill="#0284c7" />
+    <text x="18" y="-6" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#0284c7">S2</text>
+  </g>
+
+  <!-- Hand Position Target (x=165, y=70) -->
+  <!-- Right triangle 1: legs (165-60)=105 and h=(185-70)=115, hypotenuse d1 -->
+  <!-- Right triangle 2: legs (360-165)=195 and h=115, hypotenuse d2 -->
+
+  <!-- Orthogonal depth h (Z-axis / height) -->
+  <line x1="165" y1="70" x2="165" y2="185" stroke="#9333ea" stroke-width="2" stroke-dasharray="4,3" />
+  <rect x="165" y="173" width="12" height="12" fill="none" stroke="#9333ea" stroke-width="1.2" />
+  <circle cx="171" cy="179" r="1.5" fill="#9333ea" />
+  <text x="175" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#9333ea">h (Z)</text>
+
+  <!-- Acoustic ray d1 from S1 (60, 185) to hand (165, 70) -->
+  <line x1="60" y1="185" x2="165" y2="70" stroke="#0284c7" stroke-width="2.2" stroke-dasharray="6,3" />
+  <text x="100" y="118" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#0284c7">d₁</text>
+
+  <!-- Acoustic ray d2 from S2 (360, 185) to hand (165, 70) -->
+  <line x1="360" y1="185" x2="165" y2="70" stroke="#0284c7" stroke-width="2.2" stroke-dasharray="6,3" />
+  <text x="272" y="118" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#0284c7">d₂</text>
+
+  <!-- Coordinate projections along axis: p and (D - p) -->
+  <line x1="60" y1="195" x2="165" y2="195" stroke="#16a34a" stroke-width="2" />
+  <line x1="60" y1="190" x2="60" y2="200" stroke="#16a34a" stroke-width="1.5" />
+  <line x1="165" y1="185" x2="165" y2="200" stroke="#16a34a" stroke-width="1.5" />
+  <text x="110" y="209" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#16a34a">p (X)</text>
+
+  <line x1="165" y1="195" x2="360" y2="195" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,3" />
+  <line x1="360" y1="190" x2="360" y2="200" stroke="#64748b" stroke-width="1.5" />
+  <text x="260" y="209" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#64748b">D - p</text>
+
+  <!-- Hand Icon at (165, 70) -->
+  <g transform="translate(150, 48)">
+    <circle cx="15" cy="20" r="19" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+    <!-- Stylized hand -->
+    <path d="M 15 8 C 13.5 8 12.8 9.2 12.8 10.5 L 12.8 16 L 12 16 C 10.8 16 10 16.8 10 18 L 10 20 C 10 24 13 26.5 17 26.5 C 21 26.5 22.5 24 22.5 20 L 22.5 13.5 C 22.5 12.2 21.8 11.5 20.5 11.5 C 20.1 11.5 19.7 11.7 19.3 12 L 19.3 10.5 C 19.3 9.2 18.5 8 17 8 C 16.5 8 16.1 8.2 15.7 8.5 C 15.5 8.2 15 8 15 8 Z" fill="#ca8a04" />
+  </g>
+
+</svg>
+

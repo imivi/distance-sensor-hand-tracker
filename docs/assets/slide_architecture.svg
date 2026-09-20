@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 300" width="100%" height="100%">
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284c7"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <!-- Background container -->
+  <rect width="460" height="300" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- 1. Hardware Box -->
+  <g transform="translate(20, 16)">
+    <rect width="420" height="64" rx="8" fill="#f8fafc" stroke="#0284c7" stroke-width="1.5" />
+    <text x="16" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="13.5" fill="#0369a1">Hardware: Arduino Nano + 4x HC-SR04</text>
+    <text x="16" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#475569">Rilevazione distanze (S1..S4) a 115200 baud su porta seriale USB</text>
+  </g>
+
+  <!-- Arrow Serial -->
+  <line x1="230" y1="80" x2="230" y2="108" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <rect x="165" y="87" width="130" height="18" rx="4" fill="#e0f2fe" stroke="#bae6fd" stroke-width="1" />
+  <text x="230" y="100" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" fill="#0369a1">USB Serial (18-20 Hz)</text>
+
+  <!-- 2. Backend FastAPI Box -->
+  <g transform="translate(20, 114)">
+    <rect width="420" height="76" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5" />
+    <text x="16" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="13.5" fill="#15803d">Backend FastAPI &amp; Async Tasks</text>
+    <text x="16" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• <tspan font-weight="700">Async Serial Reader:</tspan> decodifica continua + filtraggio</text>
+    <text x="16" y="62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• <tspan font-weight="700">ML Inference &amp; Retrain:</tspan> joblib / scikit-learn in thread pool</text>
+  </g>
+
+  <!-- Arrow WebSocket -->
+  <line x1="230" y1="190" x2="230" y2="218" stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-green)" />
+  <rect x="155" y="197" width="150" height="18" rx="4" fill="#dcfce7" stroke="#bbf7d0" stroke-width="1" />
+  <text x="230" y="210" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" fill="#15803d">WebSocket Bi-direzionale</text>
+
+  <!-- 3. Frontend Client Box -->
+  <g transform="translate(20, 224)">
+    <rect width="420" height="62" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+    <text x="16" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="13.5" fill="#1d4ed8">Frontend: Web Client (Browser)</text>
+    <text x="16" y="46" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#475569">Canvas 2D rendering a 60 FPS, comandi di record e retrain</text>
+  </g>
+</svg>

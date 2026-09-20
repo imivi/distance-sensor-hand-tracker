@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 320" width="100%" height="100%">
+  <defs>
+    <!-- Gradients for perspective frame -->
+    <linearGradient id="frameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="fieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f0fdf4" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#e0f2fe" stop-opacity="0.5"/>
+    </linearGradient>
+    <filter id="handShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Background card -->
+  <rect width="380" height="320" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- 3D Perspective Plane Grid / Sensing Arena -->
+  <!-- Perspective Corners: Top-Left (110, 80), Top-Right (270, 80), Bottom-Right (335, 230), Bottom-Left (45, 230) -->
+  
+  <!-- Sensing area floor -->
+  <polygon points="110,80 270,80 335,230 45,230" fill="url(#fieldGrad)" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4,4" />
+
+  <!-- Center axes inside arena -->
+  <!-- Horizontal midpoint: left (77.5, 155) to right (302.5, 155) -->
+  <line x1="77.5" y1="155" x2="302.5" y2="155" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,3" />
+  <!-- Vertical midpoint: top (190, 80) to bottom (190, 230) -->
+  <line x1="190" y1="80" x2="190" y2="230" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,3" />
+
+  <!-- Outer Frame Edges (Wood / Aluminum Structure) -->
+  <!-- Bottom Edge -->
+  <polygon points="40,230 340,230 344,242 36,242" fill="#1e293b" />
+  <line x1="40" y1="230" x2="340" y2="230" stroke="#475569" stroke-width="4" stroke-linecap="round" />
+
+  <!-- Top Edge -->
+  <line x1="108" y1="80" x2="272" y2="80" stroke="#475569" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Left Edge -->
+  <line x1="40" y1="230" x2="108" y2="80" stroke="#475569" stroke-width="3.5" stroke-linecap="round" />
+
+  <!-- Right Edge -->
+  <line x1="340" y1="230" x2="272" y2="80" stroke="#475569" stroke-width="3.5" stroke-linecap="round" />
+
+  <!-- Acoustic wave arcs from sensors towards center (190, 150) -->
+  <!-- Top wave -->
+  <path d="M 175,98 Q 190,106 205,98" fill="none" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.8"/>
+  <path d="M 165,110 Q 190,120 215,110" fill="none" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.6"/>
+
+  <!-- Bottom wave -->
+  <path d="M 170,205 Q 190,195 210,205" fill="none" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.8"/>
+  <path d="M 160,192 Q 190,180 220,192" fill="none" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.6"/>
+
+  <!-- Left wave -->
+  <path d="M 98,142 Q 112,155 104,168" fill="none" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.8"/>
+
+  <!-- Right wave -->
+  <path d="M 282,142 Q 268,155 276,168" fill="none" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.8"/>
+
+  <!-- SENSORS (2 per axis = 4 HC-SR04 modules) -->
+  <!-- 1. Top Sensor (Y max) centered at (190, 80) -->
+  <g transform="translate(173, 62)">
+    <rect width="34" height="18" rx="3" fill="#0284c7" stroke="#0369a1" stroke-width="1" />
+    <circle cx="10" cy="9" r="4.5" fill="#f8fafc" stroke="#64748b" stroke-width="1" />
+    <circle cx="24" cy="9" r="4.5" fill="#f8fafc" stroke="#64748b" stroke-width="1" />
+  </g>
+
+  <!-- 2. Bottom Sensor (Y min) centered at (190, 230) -->
+  <g transform="translate(170, 226)">
+    <rect width="40" height="22" rx="4" fill="#0284c7" stroke="#0369a1" stroke-width="1" />
+    <circle cx="12" cy="11" r="5.5" fill="#f8fafc" stroke="#64748b" stroke-width="1" />
+    <circle cx="28" cy="11" r="5.5" fill="#f8fafc" stroke="#64748b" stroke-width="1" />
+  </g>
+
+  <!-- 3. Left Sensor (X min) on left edge (77, 155) -->
+  <g transform="translate(62, 142) rotate(65)">
+    <rect width="36" height="18" rx="3" fill="#0284c7" stroke="#0369a1" stroke-width="1" />
+    <circle cx="11" cy="9" r="4.5" fill="#f8fafc" stroke="#64748b" stroke-width="1" />
+    <circle cx="25" cy="9" r="4.5" fill="#f8fafc" stroke="#64748b" stroke-width="1" />
+  </g>
+
+  <!-- 4. Right Sensor (X max) on right edge (303, 155) -->
+  <g transform="translate(290, 142) rotate(-65)">
+    <rect width="36" height="18" rx="3" fill="#0284c7" stroke="#0369a1" stroke-width="1" />
+    <circle cx="11" cy="9" r="4.5" fill="#f8fafc" stroke="#64748b" stroke-width="1" />
+    <circle cx="25" cy="9" r="4.5" fill="#f8fafc" stroke="#64748b" stroke-width="1" />
+  </g>
+
+  <!-- Target Hand in the Middle hovering above center (190, 150) -->
+  <!-- Shadow of hand on plane -->
+  <ellipse cx="190" cy="166" rx="22" ry="9" fill="#0f172a" opacity="0.2" />
+
+  <!-- Hand Icon -->
+  <g transform="translate(170, 120)" filter="url(#handShadow)">
+    <circle cx="20" cy="22" r="22" fill="#fef08a" stroke="#ca8a04" stroke-width="1.8" />
+    <!-- Stylized hand gesture pointing / tracking -->
+    <path d="M 20 10 C 18 10 17 11.5 17 13 L 17 20 L 16 20 C 14.5 20 13.5 21 13.5 22.5 L 13.5 25 C 13.5 30 17.5 33 22.5 33 C 27.5 33 29.5 30 29.5 25 L 29.5 17 C 29.5 15.5 28.5 14.5 27 14.5 C 26.5 14.5 26 14.7 25.5 15.1 L 25.5 13 C 25.5 11.5 24.5 10 22.5 10 C 21.8 10 21.2 10.3 20.8 10.7 C 20.5 10.3 20 10 20 10 Z" fill="#ca8a04" />
+  </g>
+</svg>
+

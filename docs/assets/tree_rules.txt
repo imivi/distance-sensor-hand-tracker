@@ -1,0 +1,15 @@
+[NODE] if Grid[1,5] <= 0.50 (samples: 120, top: 'N'):
+  |-- True:  [NODE] if Grid[2,4] <= 0.50 (samples: 85, top: 'N'):
+  |-- True:    |-- True:  [NODE] if Grid[4,1] <= 0.50 (samples: 44, top: 'C'):
+  |-- True:    |-- True:    |-- True:  --> [LEAF] Pred: 'I' (samples: 14)
+  |-- True:    |-- True:    \-- False: --> [LEAF] Pred: 'C' (samples: 30)
+  |-- True:    \-- False: [NODE] if Grid[2,1] <= 0.50 (samples: 41, top: 'N'):
+  |-- True:    \-- False:   |-- True:  --> [LEAF] Pred: 'D' (samples: 15)
+  |-- True:    \-- False:   \-- False: --> [LEAF] Pred: 'N' (samples: 26)
+  \-- False: [NODE] if Grid[1,0] <= 0.50 (samples: 35, top: 'G'):
+  \-- False:   |-- True:  [NODE] if Grid[5,3] <= 0.50 (samples: 15, top: 'G'):
+  \-- False:   |-- True:    |-- True:  --> [LEAF] Pred: 'W' (samples: 7)
+  \-- False:   |-- True:    \-- False: --> [LEAF] Pred: 'G' (samples: 8)
+  \-- False:   \-- False: [NODE] if Grid[0,2] <= 0.50 (samples: 20, top: 'M'):
+  \-- False:   \-- False:   |-- True:  --> [LEAF] Pred: 'M' (samples: 12)
+  \-- False:   \-- False:   \-- False: --> [LEAF] Pred: 'O' (samples: 8)

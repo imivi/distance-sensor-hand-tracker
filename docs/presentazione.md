@@ -154,8 +154,6 @@ style: |
   <img src="assets/slide_hero.svg" width="700" style="border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.08);"/>
 </div>
 
-<span class="hero-tag">Progetto di Gruppo — Interazione Uomo-Macchina / Sistemi Embedded</span>
-
 <a class="github-link" href="https://github.com/imivi/distance-sensor-hand-tracker" target="_blank">github.com/imivi/distance-sensor-hand-tracker</a>
 
 ---
@@ -165,11 +163,12 @@ style: |
 <div class="grid-video">
 <div>
 
-### Il Sistema in Azione
-* **Tracciamento dal Vivo:** Disegno di lettere a mezz'aria nella cornice
-* **Classificazione Istantanea:** Riconoscimento della lettera e confidenza al rilascio
-* **Registrazione & Training Live:** Nuovi gesti registrati e riaddestrati in tempo reale
-* **Zero Dispositivi Indossabili:** Senza telecamere né guanti
+### Caratteristiche
+
+* **Tracciamento in tempo reale:** disegno di lettere a mezz'aria nella cornice
+* **Classificazione della lettera:** riconoscimento della lettera e classificazione con un click
+* **Registrazione e allenamento in tempo reale:** i nuovi gesti vengono registrati e il modello viene riaddestrato in tempo reale
+* **Nessun dispositivo indossabile:** senza telecamere né guanti
 
 </div>
 <div class="svg-card">
@@ -181,16 +180,17 @@ style: |
 
 ---
 
-## Interfaccia Web di Monitoraggio & Controllo
+## Interfaccia web
 
 <div class="grid-video">
 <div>
 
 ### Funzionalità dell'Applicazione
-* **Radar 2D:** Tracking continuo della mano e raggi acustici
-* **Scia Dinamica:** Tratto rosso fluido renderizzato su Canvas
-* **Predizione Live:** Lettera stimata e barra di confidenza
-* **Gestione Completa:** Registrazione gesti e retrain con un click
+
+* **Visualizzazione gesto:** tracking continuo della mano con scia del movimento
+* **Stima del gesto:** l'interfaccia riporta la lettera stimata con percentuale di affidabilità
+* **Registrazione gesti con un click** e salvataggio automatico su CSV
+* **Riallenamento modello con un click** sui dati raccolti
 
 </div>
 <div class="svg-card">
@@ -202,42 +202,20 @@ style: |
 
 ---
 
-## Obiettivi e Motivazioni
+## Sensori e classificazione
 
 <div class="grid-2">
 <div>
 
-### Perché gli ultrasuoni?
-* **Privacy-First:** Nessuna telecamera né acquisizione ottica negli ambienti
-* **Zero Dispositivi Indossabili:** Nessun guanto o anello smart
-* **Economicità Estrema:** Pochi euro di componenti hardware contro costosi sistemi ottici
+### Riconoscimento dei gesti
 
-<div class="highlight-box">
-<b>Traguardo:</b> Riconoscere 17 lettere disegnate a mezz'aria in una cornice 49×51 cm con accuratezza &gt;90%.
-</div>
-
-</div>
-<div class="svg-card">
-
-<img src="assets/slide_motivations.svg" width="370"/>
-
-</div>
-</div>
-
----
-
-## Formulazione del Problema: Classificazione Multiclasse
-
-<div class="grid-2">
-<div>
-
-### Natura del Task: Riconoscimento di Pattern
-* Il sistema risolve un problema di **classificazione multiclasse supervisionata**: mappare una sequenza gestuale continua in una categoria simbolica discreta.
+* Il sistema risolve un problema di **classificazione supervisionata** (17 classi): mappare una sequenza continua di movimenti (coordinate) in una categoria discreta.
 
 ### Input e Output del Modello
-* **Input Grezzo:** Serie temporale di coordinate $(X, Y)$ rilevate durante il movimento della mano
-* **Input al Modello:** Vettore di feature numeriche a 39 dimensioni estratto al termine del gesto
-* **Output:** Etichetta discreta della classe (tra 17 lettere dell'alfabeto) con la relativa distribuzione di confidenza
+
+* **Input dei sensori:** Serie temporale di coordinate $(X, Y)$ rilevate durante il movimento della mano
+* **Input al modello di ML:** Vettore di feature numeriche a 39 dimensioni estratto al termine del gesto
+* **Output:** etichetta discreta della classe (tra 17 lettere dell'alfabeto) con la relativa distribuzione di confidenza
 
 </div>
 <div class="svg-card">
@@ -249,66 +227,69 @@ style: |
 
 ---
 
-## Evoluzione Hardware: 3 Configurazioni Testate
+## Configurazioni hardware: 3 tipi testati
 
 <div class="grid-2">
 <div>
 
-### Il Percorso Sperimentale
-* **1. Quattro Sensori in Parallelo:**
-  * Disposti sulla stessa linea: misuravano solo la profondità 1D con forti interferenze acustiche tra loro.
-* **2. Due Sensori Perpendicolari (X, Y):**
-  * Disposizione ad "L": mappava il piano, ma **l'altezza della mano ($Z$) falsava le coordinate $(X, Y)$**.
-* **3. Quattro Sensori Opposti (2 per asse) — Scelta Finale:**
-  * Cornice chiusa $49 \times 51\text{ cm}$: confrontando i sensori opposti, **l'altezza si annulla matematicamente** per triangolazione pitagorica!
+### Configurazioni testate
+
+**<span style="color: #dc2626;">1. Quattro Sensori in Parallelo:</span>**
+* Disposti sulla stessa linea: misuravano solo la profondità 1D con forti interferenze acustiche tra loro. Bassa risoluzione sull'asse X
+
+**<span style="color: #d97706;">2. Due Sensori Perpendicolari (X, Y):</span>**
+* Disposizione ad "L": mappava il piano, ma l'altezza della mano ($Z$) falsava le coordinate $(X, Y)$.
+
+**<span style="color: #16a34a;">3. Quattro sensori opposti (2 per asse, scelta finale):</span>**
+* Cornice chiusa $49 \times 51\text{ cm}$: confrontando i sensori opposti, la profondità del gesto viene compensata
 
 </div>
-<div class="svg-card">
-
-<img src="assets/slide_sensor_configurations.svg" width="380"/>
+<div class="svg-card" style="display: flex; flex-direction: column; gap: 14px;">
+<img src="assets/slide_triangulation.svg" width="370"/>
 
 </div>
 </div>
 
 ---
 
-## Firmware Arduino: Sfide Acustiche e Temporali
+## Firmware Arduino: ottimizzazioni
 
 <div class="grid-2">
 <div>
 
 ### 1. Interferenza Acustica (Crosstalk)
-* **Il problema:** Se i 4 sensori sparano insieme, l'eco di uno viene captato per sbaglio da un altro (misure false).
-* **La soluzione:** **Interrogazione sequenziale** (S1 $\to$ S2 $\to$ S3 $\to$ S4) con pausa di **18 ms** tra i pings per far decadere i rimbalzi.
+* Se i 4 sensori vengono usati contemporaneamente, l'eco di uno viene captato per sbaglio da un altro.
+* **La soluzione:** lettura in sequenza (S1 $\to$ S2 $\to$ S3 $\to$ S4) con pausa di **18 ms** tra i pings per far decadere i rimbalzi.
 
 ### 2. Gestione dei Timeout
-* **Il problema:** Di default, se un'onda non torna indietro Arduino si blocca in attesa fino a 1 secondo!
-* **La soluzione:** **Timeout ridotto a 8 ms** (~137 cm max). Se l'eco non torna, scarta il dato e continua subito senza bloccare lo streaming (~18-20 Hz).
+* Di default, se un'onda non torna indietro Arduino si blocca in attesa fino a **1 secondo**
+* **La soluzione:** timeout ridotto a 8 ms (~137 cm max). Se l'eco non torna, scarta il dato e continua subito senza bloccare lo streaming (~18-20 Hz).
 
 </div>
-<div class="svg-card">
+<div style="display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: center;">
 
-<img src="assets/slide_firmware.svg" width="375"/>
+<img src="assets/arduino-nano.jpg" width="280" alt="Arduino Nano" style="box-shadow: none; border-radius: 8px;"/>
+<img src="assets/hc-sr04.jpg" width="280" alt="HC-SR04 Ultrasonic Sensor" style="box-shadow: none; border-radius: 8px;"/>
 
 </div>
 </div>
 
 ---
 
-## Raccolta Dati & Pulizia del Segnale
+## Raccolta dati & pulizia del segnale
 
 <div class="grid-2">
 <div>
 
-### Filtri sul Flusso Seriale
-* **Filtro Mediana Mobile:** Finestra a 5 campioni per attenuare il jitter continuo
-* **Reiezione Salti:** Scarta variazioni brusche anomale nel singolo frame
+### Filtri sul flusso seriale
+* **Filtro mediana mobile:** Legge gli ultimi 5 valori letti e prende la mediana per attenuare il jitter continuo
+* **Scarto dei valori anomali:** Scarta variazioni brusche anomale nel singolo frame ("salti")
 * **Recupero Dinamico:** Riconosce i cambi di traiettoria intenzionali e rapidi
 
-### Raccolta del Dataset
+### Creazione del dataset
 * Acquisizione interattiva tramite interfaccia web
 * **191 registrazioni complessive** su 17 lettere
-* Campioni acquisiti da diversi utenti a varie velocità
+* Campioni acquisiti da diversi utenti a varie velocità (quindi vari numeri di punti per lettera)
 
 </div>
 <div class="svg-card">
@@ -320,52 +301,94 @@ style: |
 
 ---
 
-## Feature Engineering: Invarianza Spaziale e Morfologica
+## Elaborazione dati
 
 <div class="grid-2">
 <div>
 
-### I 3 Passaggi Chiave:
+### Conversione da coordinate a griglia di punti
 1. **Normalizzazione & Centratura:**
-   * Scalatura uniforme basata sul lato maggiore
+   * Scaling uniforme basato sul lato maggiore
    * La lettera mantiene le sue proporzioni originali
-2. **Griglia di Occupanza $6 \times 6$ (36 celle):**
+2. **Griglia di Occupanza $6 \times 6$ (36 celle)**
    * Matrice binaria delle celle attraversate
    * **Interpolazione lineare** tra punti: nessun buco
-   * Completa invarianza da senso orario o antiorario!
-3. **Metriche Globali (3 valori):**
+   * Completa invarianza da senso orario o antiorario
+3. **Metriche Globali (3 valori)**
    * Rapporto di forma, larghezza e altezza in centimetri
 
 </div>
-<div class="svg-card">
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; justify-items: center; align-items: center;">
 
-<img src="assets/feature_pipeline.svg" width="460" style="max-height: 380px;"/>
+<img src="assets/gesture_samples/L_2f4f54e7.png" width="180" style="border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: none;" alt="Lettera L"/>
+<img src="assets/gesture_samples/O_10f171cc.png" width="180" style="border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: none;" alt="Lettera O"/>
+<img src="assets/gesture_samples/S_145c3c2d.png" width="180" style="border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: none;" alt="Lettera S"/>
+<img src="assets/gesture_samples/Z_1421e90c.png" width="180" style="border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: none;" alt="Lettera Z"/>
 
 </div>
 </div>
 
 ---
 
-## Modello di Machine Learning in Python
+## Machine Learning in Python (Random Forest) e feature engineering
 
-<div class="grid-2">
-<div>
+### Dataset & Training Matrix (192 campioni &times; 39 feature)
 
-### Scelta del Modello: Random Forest
-* **Dataset Compatto:** Evita il rischio di memorizzazione tipico delle reti neurali profonde
-* **Robustezza alle Feature Miste:** Gestisce assieme flag binari di griglia e metriche geometriche
-* **Inferenza Istantanea:** Previsione in meno di un millisecondo
-* **Aggiornamento a Caldo:** Riaddestramento live senza interruzione del server
+<table style="width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 8px 0 12px 0; background: #ffffff; border-radius: 6px; overflow: hidden; border: 1px solid #cbd5e1;">
+  <thead>
+    <tr style="background: #e2e8f0; color: #1e293b;">
+      <th style="padding: 6px 10px; text-align: left;">ID</th>
+      <th style="padding: 6px 10px; text-align: center;">Target</th>
+      <th style="padding: 6px 10px; text-align: center;">Grid[0,0]</th>
+      <th style="padding: 6px 10px; text-align: center;">Grid[0,1]</th>
+      <th style="padding: 6px 10px; text-align: center;">...</th>
+      <th style="padding: 6px 10px; text-align: center;">Aspect</th>
+      <th style="padding: 6px 10px; text-align: center;">Width</th>
+      <th style="padding: 6px 10px; text-align: center;">Height</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-top: 1px solid #e2e8f0;">
+      <td style="padding: 5px 10px; font-family: monospace;">2f4f54e7</td>
+      <td style="padding: 5px 10px; text-align: center; font-weight: bold; color: #0284c7;">L</td>
+      <td style="padding: 5px 10px; text-align: center;">0.0</td>
+      <td style="padding: 5px 10px; text-align: center;">0.0</td>
+      <td style="padding: 5px 10px; text-align: center;">...</td>
+      <td style="padding: 5px 10px; text-align: center;">1.46</td>
+      <td style="padding: 5px 10px; text-align: center;">9.3 cm</td>
+      <td style="padding: 5px 10px; text-align: center;">13.6 cm</td>
+    </tr>
+    <tr style="border-top: 1px solid #e2e8f0; background: #f8fafc;">
+      <td style="padding: 5px 10px; font-family: monospace;">4a081398</td>
+      <td style="padding: 5px 10px; text-align: center; font-weight: bold; color: #0284c7;">O</td>
+      <td style="padding: 5px 10px; text-align: center;">0.0</td>
+      <td style="padding: 5px 10px; text-align: center;">1.0</td>
+      <td style="padding: 5px 10px; text-align: center;">...</td>
+      <td style="padding: 5px 10px; text-align: center;">1.06</td>
+      <td style="padding: 5px 10px; text-align: center;">15.0 cm</td>
+      <td style="padding: 5px 10px; text-align: center;">15.9 cm</td>
+    </tr>
+    <tr style="border-top: 1px solid #e2e8f0;">
+      <td style="padding: 5px 10px; font-family: monospace;">1421e90c</td>
+      <td style="padding: 5px 10px; text-align: center; font-weight: bold; color: #0284c7;">Z</td>
+      <td style="padding: 5px 10px; text-align: center;">1.0</td>
+      <td style="padding: 5px 10px; text-align: center;">1.0</td>
+      <td style="padding: 5px 10px; text-align: center;">...</td>
+      <td style="padding: 5px 10px; text-align: center;">0.93</td>
+      <td style="padding: 5px 10px; text-align: center;">11.3 cm</td>
+      <td style="padding: 5px 10px; text-align: center;">10.5 cm</td>
+    </tr>
+  </tbody>
+</table>
 
-### Protocollo di Validazione
-* **Stratified 5-Fold Cross-Validation:** Tutte le classi bilanciate tra training e test
-
+<div style="display: flex; justify-content: space-between; font-size: 15px; color: #334155; margin-bottom: 10px;">
+  <span>&bull; <strong>17 classi</strong> distinte di lettere</span>
+  <span>&bull; <strong>39 feature numeriche:</strong> 36 griglia binaria 6&times;6 + 3 variabili (forma della lettera)</span>
+  <span>&bull; <strong>Modello:</strong> Random Forest (100 alberi)</span>
 </div>
-<div class="svg-card">
 
-<img src="assets/slide_rf.svg" width="340"/>
-
-</div>
+<div style="display: flex; justify-content: center; width: 100%;">
+  <img src="assets/tree_visualization.svg" style="width: 100%; max-height: 220px; object-fit: contain; border-radius: 8px; box-shadow: none;" alt="Visualizzazione Decision Tree"/>
 </div>
 
 ---
@@ -381,12 +404,12 @@ style: |
 * **Recall Macro:** **90.9%**
 
 ### Lettere con Prestazioni Massime
-* **P, G (100%):** Tratti chiusi inconfondibili
-* **I, S, A (>95%):** Spiccata unicità morfologica
+* **P, G (100%):** tratti chiusi inconfondibili
+* **I, S, A (>95%):** forma molto identificabile
 
 ### Ambiguità Rilevate
-* **D vs J:** Parte superiore aperta nei tratti veloci
-* **M vs N:** Risoluzione griglia sul picco centrale
+* **D vs J:** parte superiore aperta nei tratti veloci
+* **M vs N:** bassa risoluzione della griglia 6x6 sul picco centrale (meglio 8x8)
 
 </div>
 <div class="svg-card">
@@ -398,45 +421,46 @@ style: |
 
 ---
 
-## Architettura Software & Interfaccia Utente
+## Architettura software frontend + backend
 
 <div class="grid-2">
 <div>
 
-### Web App Reattiva Full-Stack
-* **Radar 2D Interattivo:** Traccia la posizione della mano in tempo reale con visualizzazione dei raggi
-* **Scia Rossa Dinamica:** Rendering fluido del tratto disegnato a mezz'aria
-* **Classificazione Live:** Mostra le 4 predizioni più probabili con percentuali di confidenza
-* **Retrain con Un Click:** Aggiorna il modello direttamente dal browser
+### Backend in Python (FastAPI e websocket)
+
+* **Lettura seriale non bloccante:** task asincrono di background dedicato alla lettura dello stream USB (~18–20 Hz)
+* **WebSockets full-duplex:** invio dati in tempo reale di coordinate $(X, Y)$ grezze e filtrate ai client connessi
+* **Inferenza & Retrain Asincrono:** esecuzione del modello Random Forest in thread pool (run_in_executor) per non bloccare l'event loop
+* **Persistenza Dati:** salvataggio dati registrazioni su CSV
 
 </div>
 <div class="svg-card">
 
-<img src="assets/slide_ui.svg" width="350"/>
+<img src="assets/slide_architecture.svg" width="370" alt="Architettura Software"/>
 
 </div>
 </div>
 
 ---
 
-## Conclusioni & Sviluppi Futuri
+## Conclusioni
 
 <div class="grid-2">
 <div>
 
 ### Risultati Ottenuti
 * Interazione touchless affidabile senza dispositivi ottici
-* Invarianza geometrica grazie alla griglia di occupanza con interpolazione
-* Sistema integrato reattivo a bassissima latenza
+* Sistema facile da usare e a bassa latenza
 
 ### Limiti Fisici
 * Frequenza vincolata dalla velocità del suono in aria
+* Sensibilità al materiale usato per il tracciamento (mano, bottiglia, etc)
 * Sensibilità all'inclinazione del palmo
 
 </div>
 <div class="svg-card">
 
-<img src="assets/slide_future.svg" width="340"/>
+<img src="assets/slide_perspective_frame.svg" width="370" alt="Struttura della cornice e sensori in prospettiva" style="box-shadow: none;"/>
 
 </div>
 </div>
@@ -448,7 +472,5 @@ style: |
 
 # Grazie per l'Attenzione!
 ### 2D Ultrasonic Hand Tracker & Classifier
-
-<span class="hero-tag">Siamo a disposizione per qualsiasi domanda o approfondimento tecnico!</span>
 
 <a class="github-link" href="https://github.com/imivi/distance-sensor-hand-tracker" target="_blank" style="margin-top: 18px;">github.com/imivi/distance-sensor-hand-tracker</a>

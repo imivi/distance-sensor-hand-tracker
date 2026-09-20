@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1435 468" width="100%" height="100%">
+  <rect width="1435" height="468" fill="#f8fafc" />
+  <style>
+    .edge { stroke: #94a3b8; stroke-width: 2; fill: none; }
+    .edge-lbl { font-family: system-ui, sans-serif; font-size: 11px; fill: #64748b; font-weight: 600; }
+    .node-box { rx: 8; stroke-width: 1.5; }
+    .node-title { font-family: system-ui, sans-serif; font-weight: 700; font-size: 12px; }
+    .node-sub { font-family: system-ui, sans-serif; font-size: 11px; fill: #475569; }
+    .node-class { font-family: system-ui, sans-serif; font-weight: 700; font-size: 11px; }
+  </style>
+  <path d="M 717.5 98.0 C 717.5 119.0, 367.5 119.0, 367.5 140.0" class="edge" />
+  <text x="528.5" y="119.0" class="edge-lbl">True</text>
+  <path d="M 717.5 98.0 C 717.5 119.0, 1067.5 119.0, 1067.5 140.0" class="edge" />
+  <text x="898.5" y="119.0" class="edge-lbl">False</text>
+  <path d="M 367.5 208.0 C 367.5 229.0, 192.5 229.0, 192.5 250.0" class="edge" />
+  <text x="266.0" y="229.0" class="edge-lbl">True</text>
+  <path d="M 367.5 208.0 C 367.5 229.0, 542.5 229.0, 542.5 250.0" class="edge" />
+  <text x="461.0" y="229.0" class="edge-lbl">False</text>
+  <path d="M 192.5 318.0 C 192.5 339.0, 105.0 339.0, 105.0 360.0" class="edge" />
+  <text x="134.75" y="339.0" class="edge-lbl">True</text>
+  <path d="M 192.5 318.0 C 192.5 339.0, 280.0 339.0, 280.0 360.0" class="edge" />
+  <text x="242.25" y="339.0" class="edge-lbl">False</text>
+  <path d="M 542.5 318.0 C 542.5 339.0, 455.0 339.0, 455.0 360.0" class="edge" />
+  <text x="484.75" y="339.0" class="edge-lbl">True</text>
+  <path d="M 542.5 318.0 C 542.5 339.0, 630.0 339.0, 630.0 360.0" class="edge" />
+  <text x="592.25" y="339.0" class="edge-lbl">False</text>
+  <path d="M 1067.5 208.0 C 1067.5 229.0, 892.5 229.0, 892.5 250.0" class="edge" />
+  <text x="966.0" y="229.0" class="edge-lbl">True</text>
+  <path d="M 1067.5 208.0 C 1067.5 229.0, 1242.5 229.0, 1242.5 250.0" class="edge" />
+  <text x="1161.0" y="229.0" class="edge-lbl">False</text>
+  <path d="M 892.5 318.0 C 892.5 339.0, 805.0 339.0, 805.0 360.0" class="edge" />
+  <text x="834.75" y="339.0" class="edge-lbl">True</text>
+  <path d="M 892.5 318.0 C 892.5 339.0, 980.0 339.0, 980.0 360.0" class="edge" />
+  <text x="942.25" y="339.0" class="edge-lbl">False</text>
+  <path d="M 1242.5 318.0 C 1242.5 339.0, 1155.0 339.0, 1155.0 360.0" class="edge" />
+  <text x="1184.75" y="339.0" class="edge-lbl">True</text>
+  <path d="M 1242.5 318.0 C 1242.5 339.0, 1330.0 339.0, 1330.0 360.0" class="edge" />
+  <text x="1292.25" y="339.0" class="edge-lbl">False</text>
+  <g transform="translate(642.5, 30.0)">
+    <rect width="150" height="68" class="node-box" fill="#ffffff" stroke="#0284c7" />
+    <text x="10" y="22" class="node-title" fill="#0369a1">Grid[1,5] &#8804; 0.50</text>
+    <text x="10" y="42" class="node-sub">Campioni: 120</text>
+    <text x="10" y="58" class="node-class" fill="#0369a1">Pred: &apos;N&apos;</text>
+  </g>
+  <g transform="translate(292.5, 140.0)">
+    <rect width="150" height="68" class="node-box" fill="#ffffff" stroke="#0284c7" />
+    <text x="10" y="22" class="node-title" fill="#0369a1">Grid[2,4] &#8804; 0.50</text>
+    <text x="10" y="42" class="node-sub">Campioni: 85</text>
+    <text x="10" y="58" class="node-class" fill="#0369a1">Pred: &apos;N&apos;</text>
+  </g>
+  <g transform="translate(117.5, 250.0)">
+    <rect width="150" height="68" class="node-box" fill="#ffffff" stroke="#0284c7" />
+    <text x="10" y="22" class="node-title" fill="#0369a1">Grid[4,1] &#8804; 0.50</text>
+    <text x="10" y="42" class="node-sub">Campioni: 44</text>
+    <text x="10" y="58" class="node-class" fill="#0369a1">Pred: &apos;C&apos;</text>
+  </g>
+  <g transform="translate(30.0, 360.0)">
+    <rect width="150" height="68" class="node-box" fill="#ecfdf5" stroke="#10b981" />
+    <text x="10" y="22" class="node-title" fill="#047857">Foglia (Terminale)</text>
+    <text x="10" y="42" class="node-sub">Campioni: 14</text>
+    <text x="10" y="58" class="node-class" fill="#047857">Pred: &apos;I&apos;</text>
+  </g>
+  <g transform="translate(205.0, 360.0)">
+    <rect width="150" height="68" class="node-box" fill="#ecfdf5" stroke="#10b981" />
+    <text x="10" y="22" class="node-title" fill="#047857">Foglia (Terminale)</text>
+    <text x="10" y="42" class="node-sub">Campioni: 30</text>
+    <text x="10" y="58" class="node-class" fill="#047857">Pred: &apos;C&apos;</text>
+  </g>
+  <g transform="translate(467.5, 250.0)">
+    <rect width="150" height="68" class="node-box" fill="#ffffff" stroke="#0284c7" />
+    <text x="10" y="22" class="node-title" fill="#0369a1">Grid[2,1] &#8804; 0.50</text>
+    <text x="10" y="42" class="node-sub">Campioni: 41</text>
+    <text x="10" y="58" class="node-class" fill="#0369a1">Pred: &apos;N&apos;</text>
+  </g>
+  <g transform="translate(380.0, 360.0)">
+    <rect width="150" height="68" class="node-box" fill="#ecfdf5" stroke="#10b981" />
+    <text x="10" y="22" class="node-title" fill="#047857">Foglia (Terminale)</text>
+    <text x="10" y="42" class="node-sub">Campioni: 15</text>
+    <text x="10" y="58" class="node-class" fill="#047857">Pred: &apos;D&apos;</text>
+  </g>
+  <g transform="translate(555.0, 360.0)">
+    <rect width="150" height="68" class="node-box" fill="#ecfdf5" stroke="#10b981" />
+    <text x="10" y="22" class="node-title" fill="#047857">Foglia (Terminale)</text>
+    <text x="10" y="42" class="node-sub">Campioni: 26</text>
+    <text x="10" y="58" class="node-class" fill="#047857">Pred: &apos;N&apos;</text>
+  </g>
+  <g transform="translate(992.5, 140.0)">
+    <rect width="150" height="68" class="node-box" fill="#ffffff" stroke="#0284c7" />
+    <text x="10" y="22" class="node-title" fill="#0369a1">Grid[1,0] &#8804; 0.50</text>
+    <text x="10" y="42" class="node-sub">Campioni: 35</text>
+    <text x="10" y="58" class="node-class" fill="#0369a1">Pred: &apos;G&apos;</text>
+  </g>
+  <g transform="translate(817.5, 250.0)">
+    <rect width="150" height="68" class="node-box" fill="#ffffff" stroke="#0284c7" />
+    <text x="10" y="22" class="node-title" fill="#0369a1">Grid[5,3] &#8804; 0.50</text>
+    <text x="10" y="42" class="node-sub">Campioni: 15</text>
+    <text x="10" y="58" class="node-class" fill="#0369a1">Pred: &apos;G&apos;</text>
+  </g>
+  <g transform="translate(730.0, 360.0)">
+    <rect width="150" height="68" class="node-box" fill="#ecfdf5" stroke="#10b981" />
+    <text x="10" y="22" class="node-title" fill="#047857">Foglia (Terminale)</text>
+    <text x="10" y="42" class="node-sub">Campioni: 7</text>
+    <text x="10" y="58" class="node-class" fill="#047857">Pred: &apos;W&apos;</text>
+  </g>
+  <g transform="translate(905.0, 360.0)">
+    <rect width="150" height="68" class="node-box" fill="#ecfdf5" stroke="#10b981" />
+    <text x="10" y="22" class="node-title" fill="#047857">Foglia (Terminale)</text>
+    <text x="10" y="42" class="node-sub">Campioni: 8</text>
+    <text x="10" y="58" class="node-class" fill="#047857">Pred: &apos;G&apos;</text>
+  </g>
+  <g transform="translate(1167.5, 250.0)">
+    <rect width="150" height="68" class="node-box" fill="#ffffff" stroke="#0284c7" />
+    <text x="10" y="22" class="node-title" fill="#0369a1">Grid[0,2] &#8804; 0.50</text>
+    <text x="10" y="42" class="node-sub">Campioni: 20</text>
+    <text x="10" y="58" class="node-class" fill="#0369a1">Pred: &apos;M&apos;</text>
+  </g>
+  <g transform="translate(1080.0, 360.0)">
+    <rect width="150" height="68" class="node-box" fill="#ecfdf5" stroke="#10b981" />
+    <text x="10" y="22" class="node-title" fill="#047857">Foglia (Terminale)</text>
+    <text x="10" y="42" class="node-sub">Campioni: 12</text>
+    <text x="10" y="58" class="node-class" fill="#047857">Pred: &apos;M&apos;</text>
+  </g>
+  <g transform="translate(1255.0, 360.0)">
+    <rect width="150" height="68" class="node-box" fill="#ecfdf5" stroke="#10b981" />
+    <text x="10" y="22" class="node-title" fill="#047857">Foglia (Terminale)</text>
+    <text x="10" y="42" class="node-sub">Campioni: 8</text>
+    <text x="10" y="58" class="node-class" fill="#047857">Pred: &apos;O&apos;</text>
+  </g>
+</svg>
