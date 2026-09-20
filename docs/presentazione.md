@@ -202,31 +202,6 @@ style: |
 
 ---
 
-## Sensori e classificazione
-
-<div class="grid-2">
-<div>
-
-### Riconoscimento dei gesti
-
-* Il sistema risolve un problema di **classificazione supervisionata** (17 classi): mappare una sequenza continua di movimenti (coordinate) in una categoria discreta.
-
-### Input e Output del Modello
-
-* **Input dei sensori:** Serie temporale di coordinate $(X, Y)$ rilevate durante il movimento della mano
-* **Input al modello di ML:** Vettore di feature numeriche a 39 dimensioni estratto al termine del gesto
-* **Output:** etichetta discreta della classe (tra 17 lettere dell'alfabeto) con la relativa distribuzione di confidenza
-
-</div>
-<div class="svg-card">
-
-<img src="assets/slide_coordinates_to_grid.svg" width="390"/>
-
-</div>
-</div>
-
----
-
 ## Configurazioni hardware: 3 tipi testati
 
 <div class="grid-2">
@@ -295,6 +270,31 @@ style: |
 <div class="svg-card">
 
 <img src="assets/slide_filtering.svg" width="350"/>
+
+</div>
+</div>
+
+---
+
+## Sensori e classificazione
+
+<div class="grid-2">
+<div>
+
+### Riconoscimento dei gesti
+
+* Il sistema risolve un problema di **classificazione supervisionata** (17 classi): mappare una sequenza continua di movimenti (coordinate) in una categoria discreta.
+
+### Input e Output del Modello
+
+* **Input dei sensori:** Serie temporale di coordinate $(X, Y)$ rilevate durante il movimento della mano
+* **Input al modello di ML:** Vettore di feature numeriche a 39 dimensioni estratto al termine del gesto
+* **Output:** etichetta discreta della classe (tra 17 lettere dell'alfabeto) con la relativa distribuzione di confidenza
+
+</div>
+<div class="svg-card">
+
+<img src="assets/slide_coordinates_to_grid.svg" width="390"/>
 
 </div>
 </div>

@@ -309,28 +309,6 @@
 
     <!-- Slide 4 -->
     <div class="slide" data-slide="4">
-      <h2>Sensori e classificazione</h2>
-        <div class="grid-2">
-        <div>
-          <h3>Riconoscimento dei gesti</h3>
-          <ul>
-            <li>Il sistema risolve un problema di <strong>classificazione supervisionata</strong> (17 classi): mappare una sequenza continua di movimenti (coordinate) in una categoria discreta.</li>
-          </ul>
-          <h3>Input e Output del Modello</h3>
-          <ul>
-            <li><strong>Input dei sensori:</strong> Serie temporale di coordinate (X, Y) rilevate durante il movimento della mano</li>
-            <li><strong>Input al modello di ML:</strong> Vettore di feature numeriche a 39 dimensioni estratto al termine del gesto</li>
-            <li><strong>Output:</strong> etichetta discreta della classe (tra 17 lettere dell'alfabeto) con la relativa distribuzione di confidenza</li>
-          </ul>
-        </div>
-        <div class="svg-card">
-        <img src="assets/slide_coordinates_to_grid.svg" width="390"/>
-        </div>
-        </div>
-    </div>
-
-    <!-- Slide 5 -->
-    <div class="slide" data-slide="5">
       <h2>Configurazioni hardware: 3 tipi testati</h2>
         <div class="grid-2">
         <div>
@@ -354,8 +332,8 @@
         </div>
     </div>
 
-    <!-- Slide 6 -->
-    <div class="slide" data-slide="6">
+    <!-- Slide 5 -->
+    <div class="slide" data-slide="5">
       <h2>Firmware Arduino: ottimizzazioni</h2>
         <div class="grid-2">
         <div>
@@ -377,8 +355,8 @@
         </div>
     </div>
 
-    <!-- Slide 7 -->
-    <div class="slide" data-slide="7">
+    <!-- Slide 6 -->
+    <div class="slide" data-slide="6">
       <h2>Raccolta dati & pulizia del segnale</h2>
         <div class="grid-2">
         <div>
@@ -397,6 +375,28 @@
         </div>
         <div class="svg-card">
         <img src="assets/slide_filtering.svg" width="350"/>
+        </div>
+        </div>
+    </div>
+
+    <!-- Slide 7 -->
+    <div class="slide" data-slide="7">
+      <h2>Sensori e classificazione</h2>
+        <div class="grid-2">
+        <div>
+          <h3>Riconoscimento dei gesti</h3>
+          <ul>
+            <li>Il sistema risolve un problema di <strong>classificazione supervisionata</strong> (17 classi): mappare una sequenza continua di movimenti (coordinate) in una categoria discreta.</li>
+          </ul>
+          <h3>Input e Output del Modello</h3>
+          <ul>
+            <li><strong>Input dei sensori:</strong> Serie temporale di coordinate (X, Y) rilevate durante il movimento della mano</li>
+            <li><strong>Input al modello di ML:</strong> Vettore di feature numeriche a 39 dimensioni estratto al termine del gesto</li>
+            <li><strong>Output:</strong> etichetta discreta della classe (tra 17 lettere dell'alfabeto) con la relativa distribuzione di confidenza</li>
+          </ul>
+        </div>
+        <div class="svg-card">
+        <img src="assets/slide_coordinates_to_grid.svg" width="390"/>
         </div>
         </div>
     </div>
