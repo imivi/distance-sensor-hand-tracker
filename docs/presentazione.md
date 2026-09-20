@@ -3,6 +3,7 @@ marp: true
 theme: default
 paginate: true
 size: 16:10
+transition: slide
 style: |
   section {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -11,6 +12,9 @@ style: |
     background: #f8fafc;
     color: #0f172a;
     box-sizing: border-box;
+  }
+  section.compact-slide {
+    padding: 24px 50px;
   }
   h1 {
     color: #0369a1;
@@ -165,10 +169,12 @@ style: |
 
 ### Caratteristiche
 
-* **Tracciamento in tempo reale:** disegno di lettere a mezz'aria nella cornice
-* **Classificazione della lettera:** riconoscimento della lettera e classificazione con un click
-* **Registrazione e allenamento in tempo reale:** i nuovi gesti vengono registrati e il modello viene riaddestrato in tempo reale
-* **Nessun dispositivo indossabile:** senza telecamere né guanti
+<ul>
+  <li><strong>Tracciamento in tempo reale:</strong> disegno di lettere a mezz'aria nella cornice</li>
+  <li><strong>Classificazione della lettera:</strong> riconoscimento della lettera e classificazione con un click</li>
+  <li><strong>Registrazione e allenamento in tempo reale:</strong> i nuovi gesti vengono registrati e il modello viene riaddestrato in tempo reale</li>
+  <li><strong>Nessun dispositivo indossabile:</strong> senza telecamere né guanti</li>
+</ul>
 
 </div>
 <div class="svg-card">
@@ -187,10 +193,12 @@ style: |
 
 ### Funzionalità dell'Applicazione
 
-* **Visualizzazione gesto:** tracking continuo della mano con scia del movimento
-* **Stima del gesto:** l'interfaccia riporta la lettera stimata con percentuale di affidabilità
-* **Registrazione gesti con un click** e salvataggio automatico su CSV
-* **Riallenamento modello con un click** sui dati raccolti
+<ul>
+  <li><strong>Visualizzazione gesto:</strong> tracking continuo della mano con scia del movimento</li>
+  <li><strong>Stima del gesto:</strong> l'interfaccia riporta la lettera stimata con percentuale di affidabilità</li>
+  <li><strong>Registrazione gesti con un click</strong> e salvataggio automatico su CSV</li>
+  <li><strong>Riallenamento modello con un click</strong> sui dati raccolti</li>
+</ul>
 
 </div>
 <div class="svg-card">
@@ -210,13 +218,19 @@ style: |
 ### Configurazioni testate
 
 **<span style="color: #dc2626;">1. Quattro Sensori in Parallelo:</span>**
-* Disposti sulla stessa linea: misuravano solo la profondità 1D con forti interferenze acustiche tra loro. Bassa risoluzione sull'asse X
+<ul>
+  <li>Disposti sulla stessa linea: misuravano solo la profondità 1D con forti interferenze acustiche tra loro. Bassa risoluzione sull'asse X</li>
+</ul>
 
 **<span style="color: #d97706;">2. Due Sensori Perpendicolari (X, Y):</span>**
-* Disposizione ad "L": mappava il piano, ma l'altezza della mano ($Z$) falsava le coordinate $(X, Y)$.
+<ul>
+  <li>Disposizione ad "L": mappava il piano, ma l'altezza della mano (Z) falsava le coordinate (X, Y).</li>
+</ul>
 
 **<span style="color: #16a34a;">3. Quattro sensori opposti (2 per asse, scelta finale):</span>**
-* Cornice chiusa $49 \times 51\text{ cm}$: confrontando i sensori opposti, la profondità del gesto viene compensata
+<ul>
+  <li>Cornice chiusa 49 x 51 cm: confrontando i sensori opposti, la profondità del gesto viene compensata</li>
+</ul>
 
 </div>
 <div class="svg-card" style="display: flex; flex-direction: column; gap: 14px;">
@@ -233,12 +247,16 @@ style: |
 <div>
 
 ### 1. Interferenza Acustica (Crosstalk)
-* Se i 4 sensori vengono usati contemporaneamente, l'eco di uno viene captato per sbaglio da un altro.
-* **La soluzione:** lettura in sequenza (S1 $\to$ S2 $\to$ S3 $\to$ S4) con pausa di **18 ms** tra i pings per far decadere i rimbalzi.
+<ul>
+  <li>Se i 4 sensori vengono usati contemporaneamente, l'eco di uno viene captato per sbaglio da un altro.</li>
+  <li><strong>La soluzione:</strong> lettura in sequenza (S1 -> S2 -> S3 -> S4) con pausa di <strong>18 ms</strong> tra i pings per far decadere i rimbalzi.</li>
+</ul>
 
 ### 2. Gestione dei Timeout
-* Di default, se un'onda non torna indietro Arduino si blocca in attesa fino a **1 secondo**
-* **La soluzione:** timeout ridotto a 8 ms (~137 cm max). Se l'eco non torna, scarta il dato e continua subito senza bloccare lo streaming (~18-20 Hz).
+<ul>
+  <li>Di default, se un'onda non torna indietro Arduino si blocca in attesa fino a <strong>1 secondo</strong></li>
+  <li><strong>La soluzione:</strong> timeout ridotto a 8 ms (~137 cm max). Se l'eco non torna, scarta il dato e continua subito senza bloccare lo streaming (~18-20 Hz).</li>
+</ul>
 
 </div>
 <div style="display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: center;">
@@ -257,14 +275,18 @@ style: |
 <div>
 
 ### Filtri sul flusso seriale
-* **Filtro mediana mobile:** Legge gli ultimi 5 valori letti e prende la mediana per attenuare il jitter continuo
-* **Scarto dei valori anomali:** Scarta variazioni brusche anomale nel singolo frame ("salti")
-* **Recupero Dinamico:** Riconosce i cambi di traiettoria intenzionali e rapidi
+<ul>
+  <li><strong>Filtro mediana mobile:</strong> Legge gli ultimi 5 valori letti e prende la mediana per attenuare il jitter continuo</li>
+  <li><strong>Scarto dei valori anomali:</strong> Scarta variazioni brusche anomale nel singolo frame ("salti")</li>
+  <li><strong>Recupero Dinamico:</strong> Riconosce i cambi di traiettoria intenzionali e rapidi</li>
+</ul>
 
 ### Creazione del dataset
-* Acquisizione interattiva tramite interfaccia web
-* **191 registrazioni complessive** su 17 lettere
-* Campioni acquisiti da diversi utenti a varie velocità (quindi vari numeri di punti per lettera)
+<ul>
+  <li>Acquisizione interattiva tramite interfaccia web</li>
+  <li><strong>191 registrazioni complessive</strong> su 17 lettere</li>
+  <li>Campioni acquisiti da diversi utenti a varie velocità (quindi vari numeri di punti per lettera)</li>
+</ul>
 
 </div>
 <div class="svg-card">
@@ -283,13 +305,17 @@ style: |
 
 ### Riconoscimento dei gesti
 
-* Il sistema risolve un problema di **classificazione supervisionata** (17 classi): mappare una sequenza continua di movimenti (coordinate) in una categoria discreta.
+<ul>
+  <li>Il sistema risolve un problema di <strong>classificazione supervisionata</strong> (17 classi): mappare una sequenza continua di movimenti (coordinate) in una categoria discreta.</li>
+</ul>
 
 ### Input e Output del Modello
 
-* **Input dei sensori:** Serie temporale di coordinate $(X, Y)$ rilevate durante il movimento della mano
-* **Input al modello di ML:** Vettore di feature numeriche a 39 dimensioni estratto al termine del gesto
-* **Output:** etichetta discreta della classe (tra 17 lettere dell'alfabeto) con la relativa distribuzione di confidenza
+<ul>
+  <li><strong>Input dei sensori:</strong> Serie temporale di coordinate (X, Y) rilevate durante il movimento della mano</li>
+  <li><strong>Input al modello di ML:</strong> Vettore di feature numeriche a 39 dimensioni estratto al termine del gesto</li>
+  <li><strong>Output:</strong> etichetta discreta della classe (tra 17 lettere dell'alfabeto) con la relativa distribuzione di confidenza</li>
+</ul>
 
 </div>
 <div class="svg-card">
@@ -307,15 +333,26 @@ style: |
 <div>
 
 ### Conversione da coordinate a griglia di punti
-1. **Normalizzazione & Centratura:**
-   * Scaling uniforme basato sul lato maggiore
-   * La lettera mantiene le sue proporzioni originali
-2. **Griglia di Occupanza $6 \times 6$ (36 celle)**
-   * Matrice binaria delle celle attraversate
-   * **Interpolazione lineare** tra punti: nessun buco
-   * Completa invarianza da senso orario o antiorario
-3. **Metriche Globali (3 valori)**
-   * Rapporto di forma, larghezza e altezza in centimetri
+<ol style="margin-top: 4px; margin-bottom: 12px; padding-left: 22px;">
+  <li><strong>Normalizzazione &amp; Centratura:</strong>
+    <ul>
+      <li>Scaling uniforme basato sul lato maggiore</li>
+      <li>La lettera mantiene le sue proporzioni originali</li>
+    </ul>
+  </li>
+  <li><strong>Griglia di Occupanza 6x6 (36 celle)</strong>
+    <ul>
+      <li>Matrice binaria delle celle attraversate</li>
+      <li><strong>Interpolazione lineare</strong> tra punti: nessun buco</li>
+      <li>Completa invarianza da senso orario o antiorario</li>
+    </ul>
+  </li>
+  <li><strong>Metriche Globali (3 valori)</strong>
+    <ul>
+      <li>Rapporto di forma, larghezza e altezza in centimetri</li>
+    </ul>
+  </li>
+</ol>
 
 </div>
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; justify-items: center; align-items: center;">
@@ -330,65 +367,67 @@ style: |
 
 ---
 
+<!-- _class: compact-slide -->
+
 ## Machine Learning in Python (Random Forest) e feature engineering
 
 ### Dataset & Training Matrix (192 campioni &times; 39 feature)
 
-<table style="width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 8px 0 12px 0; background: #ffffff; border-radius: 6px; overflow: hidden; border: 1px solid #cbd5e1;">
+<table style="width: 100%; border-collapse: collapse; font-size: 12px; margin: 4px 0 8px 0; background: #ffffff; border-radius: 6px; overflow: hidden; border: 1px solid #cbd5e1;">
   <thead>
     <tr style="background: #e2e8f0; color: #1e293b;">
-      <th style="padding: 6px 10px; text-align: left;">ID</th>
-      <th style="padding: 6px 10px; text-align: center;">Target</th>
-      <th style="padding: 6px 10px; text-align: center;">Grid[0,0]</th>
-      <th style="padding: 6px 10px; text-align: center;">Grid[0,1]</th>
-      <th style="padding: 6px 10px; text-align: center;">...</th>
-      <th style="padding: 6px 10px; text-align: center;">Aspect</th>
-      <th style="padding: 6px 10px; text-align: center;">Width</th>
-      <th style="padding: 6px 10px; text-align: center;">Height</th>
+      <th style="padding: 4px 8px; text-align: left;">ID</th>
+      <th style="padding: 4px 8px; text-align: center;">Target</th>
+      <th style="padding: 4px 8px; text-align: center;">Grid[0,0]</th>
+      <th style="padding: 4px 8px; text-align: center;">Grid[0,1]</th>
+      <th style="padding: 4px 8px; text-align: center;">...</th>
+      <th style="padding: 4px 8px; text-align: center;">Aspect</th>
+      <th style="padding: 4px 8px; text-align: center;">Width</th>
+      <th style="padding: 4px 8px; text-align: center;">Height</th>
     </tr>
   </thead>
   <tbody>
     <tr style="border-top: 1px solid #e2e8f0;">
-      <td style="padding: 5px 10px; font-family: monospace;">2f4f54e7</td>
-      <td style="padding: 5px 10px; text-align: center; font-weight: bold; color: #0284c7;">L</td>
-      <td style="padding: 5px 10px; text-align: center;">0.0</td>
-      <td style="padding: 5px 10px; text-align: center;">0.0</td>
-      <td style="padding: 5px 10px; text-align: center;">...</td>
-      <td style="padding: 5px 10px; text-align: center;">1.46</td>
-      <td style="padding: 5px 10px; text-align: center;">9.3 cm</td>
-      <td style="padding: 5px 10px; text-align: center;">13.6 cm</td>
+      <td style="padding: 3px 8px; font-family: monospace;">2f4f54e7</td>
+      <td style="padding: 3px 8px; text-align: center; font-weight: bold; color: #0284c7;">L</td>
+      <td style="padding: 3px 8px; text-align: center;">0.0</td>
+      <td style="padding: 3px 8px; text-align: center;">0.0</td>
+      <td style="padding: 3px 8px; text-align: center;">...</td>
+      <td style="padding: 3px 8px; text-align: center;">1.46</td>
+      <td style="padding: 3px 8px; text-align: center;">9.3 cm</td>
+      <td style="padding: 3px 8px; text-align: center;">13.6 cm</td>
     </tr>
     <tr style="border-top: 1px solid #e2e8f0; background: #f8fafc;">
-      <td style="padding: 5px 10px; font-family: monospace;">4a081398</td>
-      <td style="padding: 5px 10px; text-align: center; font-weight: bold; color: #0284c7;">O</td>
-      <td style="padding: 5px 10px; text-align: center;">0.0</td>
-      <td style="padding: 5px 10px; text-align: center;">1.0</td>
-      <td style="padding: 5px 10px; text-align: center;">...</td>
-      <td style="padding: 5px 10px; text-align: center;">1.06</td>
-      <td style="padding: 5px 10px; text-align: center;">15.0 cm</td>
-      <td style="padding: 5px 10px; text-align: center;">15.9 cm</td>
+      <td style="padding: 3px 8px; font-family: monospace;">4a081398</td>
+      <td style="padding: 3px 8px; text-align: center; font-weight: bold; color: #0284c7;">O</td>
+      <td style="padding: 3px 8px; text-align: center;">0.0</td>
+      <td style="padding: 3px 8px; text-align: center;">1.0</td>
+      <td style="padding: 3px 8px; text-align: center;">...</td>
+      <td style="padding: 3px 8px; text-align: center;">1.06</td>
+      <td style="padding: 3px 8px; text-align: center;">15.0 cm</td>
+      <td style="padding: 3px 8px; text-align: center;">15.9 cm</td>
     </tr>
     <tr style="border-top: 1px solid #e2e8f0;">
-      <td style="padding: 5px 10px; font-family: monospace;">1421e90c</td>
-      <td style="padding: 5px 10px; text-align: center; font-weight: bold; color: #0284c7;">Z</td>
-      <td style="padding: 5px 10px; text-align: center;">1.0</td>
-      <td style="padding: 5px 10px; text-align: center;">1.0</td>
-      <td style="padding: 5px 10px; text-align: center;">...</td>
-      <td style="padding: 5px 10px; text-align: center;">0.93</td>
-      <td style="padding: 5px 10px; text-align: center;">11.3 cm</td>
-      <td style="padding: 5px 10px; text-align: center;">10.5 cm</td>
+      <td style="padding: 3px 8px; font-family: monospace;">1421e90c</td>
+      <td style="padding: 3px 8px; text-align: center; font-weight: bold; color: #0284c7;">Z</td>
+      <td style="padding: 3px 8px; text-align: center;">1.0</td>
+      <td style="padding: 3px 8px; text-align: center;">1.0</td>
+      <td style="padding: 3px 8px; text-align: center;">...</td>
+      <td style="padding: 3px 8px; text-align: center;">0.93</td>
+      <td style="padding: 3px 8px; text-align: center;">11.3 cm</td>
+      <td style="padding: 3px 8px; text-align: center;">10.5 cm</td>
     </tr>
   </tbody>
 </table>
 
-<div style="display: flex; justify-content: space-between; font-size: 15px; color: #334155; margin-bottom: 10px;">
-  <span>&bull; <strong>17 classi</strong> distinte di lettere</span>
-  <span>&bull; <strong>39 feature numeriche:</strong> 36 griglia binaria 6&times;6 + 3 variabili (forma della lettera)</span>
+<div style="display: flex; justify-content: space-between; font-size: 14px; color: #334155; margin-bottom: 8px;">
+  <span>&bull; <strong>17 classi</strong> distinte</span>
+  <span>&bull; <strong>39 feature numeriche:</strong> 36 griglia binaria 6&times;6 + 3 geometriche</span>
   <span>&bull; <strong>Modello:</strong> Random Forest (100 alberi)</span>
 </div>
 
-<div style="display: flex; justify-content: center; width: 100%;">
-  <img src="assets/tree_visualization.svg" style="width: 100%; max-height: 220px; object-fit: contain; border-radius: 8px; box-shadow: none;" alt="Visualizzazione Decision Tree"/>
+<div style="display: flex; justify-content: center; width: 100%; height: 210px;">
+  <img src="assets/tree_visualization.svg" style="width: 100%; height: 100%; max-height: 210px; object-fit: contain; border-radius: 8px; box-shadow: none;" alt="Visualizzazione Decision Tree"/>
 </div>
 
 ---
@@ -399,17 +438,23 @@ style: |
 <div>
 
 ### Metriche Globali
-* **Accuratezza Totale:** **91.1%**
-* **Precision Macro:** **91.3%**
-* **Recall Macro:** **90.9%**
+<ul>
+  <li><strong>Accuratezza Totale:</strong> <strong>91.1%</strong></li>
+  <li><strong>Precision Macro:</strong> <strong>91.3%</strong></li>
+  <li><strong>Recall Macro:</strong> <strong>90.9%</strong></li>
+</ul>
 
 ### Lettere con Prestazioni Massime
-* **P, G (100%):** tratti chiusi inconfondibili
-* **I, S, A (>95%):** forma molto identificabile
+<ul>
+  <li><strong>P, G (100%):</strong> tratti chiusi inconfondibili</li>
+  <li><strong>I, S, A (&gt;95%):</strong> forma molto identificabile</li>
+</ul>
 
 ### Ambiguità Rilevate
-* **D vs J:** parte superiore aperta nei tratti veloci
-* **M vs N:** bassa risoluzione della griglia 6x6 sul picco centrale (meglio 8x8)
+<ul>
+  <li><strong>D vs J:</strong> parte superiore aperta nei tratti veloci</li>
+  <li><strong>M vs N:</strong> bassa risoluzione della griglia 6x6 sul picco centrale (meglio 8x8)</li>
+</ul>
 
 </div>
 <div class="svg-card">
@@ -428,10 +473,12 @@ style: |
 
 ### Backend in Python (FastAPI e websocket)
 
-* **Lettura seriale non bloccante:** task asincrono di background dedicato alla lettura dello stream USB (~18–20 Hz)
-* **WebSockets full-duplex:** invio dati in tempo reale di coordinate $(X, Y)$ grezze e filtrate ai client connessi
-* **Inferenza & Retrain Asincrono:** esecuzione del modello Random Forest in thread pool (run_in_executor) per non bloccare l'event loop
-* **Persistenza Dati:** salvataggio dati registrazioni su CSV
+<ul>
+  <li><strong>Lettura seriale non bloccante:</strong> task asincrono di background dedicato alla lettura dello stream USB (~18–20 Hz)</li>
+  <li><strong>WebSockets full-duplex:</strong> invio dati in tempo reale di coordinate (X, Y) grezze e filtrate ai client connessi</li>
+  <li><strong>Inferenza &amp; Retrain Asincrono:</strong> esecuzione del modello Random Forest in thread pool (run_in_executor) per non bloccare l'event loop</li>
+  <li><strong>Persistenza Dati:</strong> salvataggio dati registrazioni su CSV</li>
+</ul>
 
 </div>
 <div class="svg-card">
@@ -449,13 +496,17 @@ style: |
 <div>
 
 ### Risultati Ottenuti
-* Interazione touchless affidabile senza dispositivi ottici
-* Sistema facile da usare e a bassa latenza
+<ul>
+  <li>Interazione touchless affidabile senza dispositivi ottici</li>
+  <li>Sistema facile da usare e a bassa latenza</li>
+</ul>
 
 ### Limiti Fisici
-* Frequenza vincolata dalla velocità del suono in aria
-* Sensibilità al materiale usato per il tracciamento (mano, bottiglia, etc)
-* Sensibilità all'inclinazione del palmo
+<ul>
+  <li>Frequenza vincolata dalla velocità del suono in aria</li>
+  <li>Sensibilità al materiale usato per il tracciamento (mano, bottiglia, etc)</li>
+  <li>Sensibilità all'inclinazione del palmo</li>
+</ul>
 
 </div>
 <div class="svg-card">
