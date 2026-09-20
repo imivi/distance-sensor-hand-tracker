@@ -269,6 +269,154 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       color: #94a3b8;
       font-weight: 600;
     }}
+
+    /* Minimal Slide Controls Overlay */
+    .slide-controls {{
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 6px 10px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease;
+    }}
+
+    .slide-controls.hidden {{
+      opacity: 0;
+      visibility: hidden;
+      transform: translate(-50%, 10px);
+      pointer-events: none;
+    }}
+
+    .ctrl-btn {{
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #f8fafc;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.15s, color 0.15s;
+    }}
+
+    .ctrl-btn:hover {{
+      background: rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      transform: scale(1.08);
+    }}
+
+    .ctrl-btn:active {{
+      transform: scale(0.95);
+    }}
+
+    .ctrl-btn svg {{
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }}
+
+    .ctrl-divider {{
+      width: 1px;
+      height: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      margin: 0 2px;
+    }}
+
+    /* Mobile Responsive Optimizations */
+    @media (max-width: 820px) {{
+      .slide {{
+        padding: 24px 20px 70px 20px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }}
+
+      .slide.hero,
+      .slide.closing {{
+        padding: 24px 20px 70px 20px;
+      }}
+
+      h1 {{
+        font-size: 26px;
+      }}
+
+      .slide.hero h1,
+      .slide.closing h1 {{
+        font-size: 28px;
+      }}
+
+      h2 {{
+        font-size: 21px;
+        margin-bottom: 12px;
+      }}
+
+      h3 {{
+        font-size: 16px;
+      }}
+
+      li, p {{
+        font-size: 14px;
+      }}
+
+      /* Stack 2-column layouts vertically */
+      .grid-2,
+      .grid-video {{
+        grid-template-columns: 1fr;
+        gap: 20px;
+        align-items: stretch;
+      }}
+
+      .svg-card {{
+        max-height: 280px;
+      }}
+
+      .svg-card img,
+      .svg-card video {{
+        max-height: 260px;
+        width: auto;
+      }}
+
+      /* Slide Controls for Mobile Touch */
+      .slide-controls {{
+        bottom: 16px;
+        padding: 6px 12px;
+        gap: 12px;
+      }}
+
+      .ctrl-btn {{
+        width: 38px;
+        height: 38px;
+      }}
+
+      .ctrl-btn svg {{
+        width: 20px;
+        height: 20px;
+      }}
+
+      .slide-footer-page {{
+        bottom: 16px;
+        right: 18px;
+        font-size: 11px;
+      }}
+    }}
   </style>
 </head>
 <body>
@@ -276,6 +424,25 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   <!-- Slide Deck Presentation -->
   <div class="deck-container" id="deck">
 {slides_html}
+  </div>
+
+  <!-- Minimal Floating Navigation Controls -->
+  <div class="slide-controls" id="slide-controls" aria-label="Controlli presentazione">
+    <button class="ctrl-btn" id="ctrl-prev" title="Slide precedente (Freccia Sinistra)" aria-label="Precedente">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="ctrl-btn" id="ctrl-next" title="Slide successiva (Freccia Destra / Spazio)" aria-label="Successiva">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+    <div class="ctrl-divider"></div>
+    <button class="ctrl-btn" id="ctrl-fs" title="Schermo intero (F)" aria-label="Schermo intero">
+      <svg id="fs-enter-icon" viewBox="0 0 24 24">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+      </svg>
+      <svg id="fs-exit-icon" viewBox="0 0 24 24" style="display: none;">
+        <path d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M10 4v6m0 0H4m6 0L3 3m10 7h6m-6 0V4m0 6l7-7"></path>
+      </svg>
+    </button>
   </div>
 
   <script>
@@ -365,8 +532,96 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             e.preventDefault();
             updateSlide(slides.length - 1, 1);
             break;
+          case 'f':
+          case 'F':
+            toggleFullScreen();
+            break;
         }}
       }});
+
+      // Minimal Slide Controls Interaction
+      const controls = document.getElementById('slide-controls');
+      const btnPrev = document.getElementById('ctrl-prev');
+      const btnNext = document.getElementById('ctrl-next');
+      const btnFs = document.getElementById('ctrl-fs');
+      const fsEnterIcon = document.getElementById('fs-enter-icon');
+      const fsExitIcon = document.getElementById('fs-exit-icon');
+
+      btnPrev.addEventListener('click', (e) => {{
+        e.stopPropagation();
+        prevSlide();
+      }});
+
+      btnNext.addEventListener('click', (e) => {{
+        e.stopPropagation();
+        nextSlide();
+      }});
+
+      function toggleFullScreen() {{
+        if (!document.fullscreenElement) {{
+          document.documentElement.requestFullscreen().catch(() => {{}});
+        }} else {{
+          if (document.exitFullscreen) {{
+            document.exitFullscreen().catch(() => {{}});
+          }}
+        }}
+      }}
+
+      btnFs.addEventListener('click', (e) => {{
+        e.stopPropagation();
+        toggleFullScreen();
+      }});
+
+      document.addEventListener('fullscreenchange', () => {{
+        const isFs = !!document.fullscreenElement;
+        fsEnterIcon.style.display = isFs ? 'none' : 'block';
+        fsExitIcon.style.display = isFs ? 'block' : 'none';
+      }});
+
+      // Auto fade-out after mouse stops moving for a few seconds
+      let fadeTimer = null;
+      const FADE_DELAY_MS = 2500;
+
+      function showControls() {{
+        controls.classList.remove('hidden');
+        if (fadeTimer) clearTimeout(fadeTimer);
+        fadeTimer = setTimeout(() => {{
+          controls.classList.add('hidden');
+        }}, FADE_DELAY_MS);
+      }}
+
+      window.addEventListener('mousemove', showControls);
+      window.addEventListener('mousedown', showControls);
+      window.addEventListener('touchstart', showControls, {{ passive: true }});
+
+      // Touch swipe gestures for mobile
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      window.addEventListener('touchstart', (e) => {{
+        if (e.touches.length === 1) {{
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        }}
+      }}, {{ passive: true }});
+
+      window.addEventListener('touchend', (e) => {{
+        if (e.changedTouches.length === 1) {{
+          const deltaX = e.changedTouches[0].clientX - touchStartX;
+          const deltaY = e.changedTouches[0].clientY - touchStartY;
+          // Trigger slide only if horizontal swipe dominates vertical scrolling
+          if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {{
+            if (deltaX < 0) {{
+              nextSlide();
+            }} else {{
+              prevSlide();
+            }}
+          }}
+        }}
+      }}, {{ passive: true }});
+
+      // Start fade timer on load
+      showControls();
 
       // Handle initial hash link
       const hashMatch = window.location.hash.match(/#slide-(\\d+)/);
